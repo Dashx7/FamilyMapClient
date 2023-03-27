@@ -28,6 +28,8 @@ import com.example.familymapclient.databinding.FragmentLoginBinding;
 import com.example.familymapclient.R;
 import com.example.familymapclient.serverProxy.ServerProxy;
 
+import java.util.concurrent.ExecutorService;
+
 import Request.LoginRequest;
 import Request.RegisterRequest;
 
@@ -240,18 +242,22 @@ public class LoginFragment extends Fragment {
                 registerRequest.setEmail(emailEditText.getText().toString());
                 registerRequest.setFirstName(firstNameEditText.getText().toString());
                 registerRequest.setLastName(lastNameEditText.getText().toString());
+
                 //Radio button logic
                 int radioID = genderRadioGroup.getCheckedRadioButtonId();
                 if (radioID == radioButton1.getId()){
-                    registerRequest.setGender("M");
+                    registerRequest.setGender("m");
                 }
                 else if (radioID == radioButton2.getId()){
-                    registerRequest.setGender("F");
+                    registerRequest.setGender("f");
                 }
 
                 //Create a serverProxy
                 ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
                         portEditText.getText().toString());
+
+
+
                 serverProxy.register(registerRequest); //register it
 
                 Result.RegisterResult result = serverProxy.register(registerRequest);

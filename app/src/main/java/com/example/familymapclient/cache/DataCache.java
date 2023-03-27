@@ -9,6 +9,8 @@ import Model.Person;
 
 public class DataCache {
 
+    //public String SERVERPORT = "";
+
     private static DataCache instance = new DataCache();
     private static Settings settings = new Settings();
 
@@ -22,14 +24,14 @@ public class DataCache {
     private DataCache(){
 
     }
-    List<Event> events;
-    List<Person> people;
+    public List<Event> events;
+    public List<Person> people;
 
-    Map<Integer,Person> peopleMap; //Person ID, person
-    Map<Integer, Event> eventMap; //EventID, Event
-    Map<Integer, List<Event>> personEvents;
+    public Map<Integer,Person> peopleMap; //Person ID, person
+    public Map<Integer, Event> eventMap; //EventID, Event
+    public Map<Integer, List<Event>> personEvents;
 
-    Set<Integer> paternalAncestors;
-    Set<Integer> maternalAncestors;
+    public Set<Integer> paternalAncestors;
+    public Set<Integer> maternalAncestors;
 
 }
