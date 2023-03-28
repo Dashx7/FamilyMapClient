@@ -76,4 +76,20 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
         //Swap the screen with the next one
         fragmentManager.beginTransaction().replace(R.id.fragmentFrameLayout,fragment).commit();
     }
+    @Override
+    public void notifyLoginIsDone(String message) {
+
+    }
+    @Override
+    public void notifyLoginFailed(String message) {
+
+    }
+    @Override
+    public void notifyRegisterIsDone(String message) {
+
+    }
+    @Override
+    public void notifyRegisterFailed(String message) {
+
+    }
 }

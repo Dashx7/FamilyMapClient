@@ -53,10 +53,10 @@ public class LoginViewModel extends ViewModel {
             loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
         }
         else if(host==null || host.compareTo("")==0){
-            loginFormState.setValue(new LoginFormState(true, false));
+            loginFormState.setValue(new LoginFormState(false, false));
         }
         else if(port==null || port.compareTo("")==0){
-            loginFormState.setValue(new LoginFormState(true, false));
+            loginFormState.setValue(new LoginFormState(false, false));
         }
         else if(firstName==null || firstName.compareTo("")==0){
             loginFormState.setValue(new LoginFormState(true, false));

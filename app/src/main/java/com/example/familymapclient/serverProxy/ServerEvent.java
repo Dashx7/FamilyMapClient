@@ -1,5 +1,7 @@
 package com.example.familymapclient.serverProxy;
 
+import static com.example.familymapclient.serverProxy.ServerReadWrite.readString;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,36 +15,39 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import Request.RegisterRequest;
-import Result.RegisterResult;
+import Request.EventRequest;
+import Result.EventResult;
 
-public class ServerRegister implements Runnable {
+public class ServerEvent implements Runnable{
 
-    RegisterRequest theRequest;
+    EventRequest theRequest;
     String serverHost;
     String serverPort;
     Handler theHandler;
+    EventResult eventResult;
 
-    public ServerRegister(RegisterRequest theRequest, String serverHost, String serverPort, Handler theHandler) {
+    public ServerEvent(EventRequest theRequest, String serverHost, String serverPort, Handler theHandler) {
         this.theRequest = theRequest;
         this.serverHost = serverHost;
         this.serverPort = serverPort;
         this.theHandler = theHandler;
     }
 
+
     @Override
     public void run() {
         // Login is a post request
-        RegisterResult registerResult = new RegisterResult();
         try {
             // Create a URL indicating where the server is running, and which
             // web API operation we want to call
-            URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/register");
-            // Start constructing our HTTP request
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod("POST");      // Specify that we are sending an HTTP POST request
-            http.setDoOutput(true);     // Http will have a request body
-            http.addRequestProperty("Accept", "application/json");      // Specify that we would like to receive the server's response in JSON.
+            URL url = new URL("http://" + serverHost + ":" + serverPort + "/event");
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();// Start constructing our HTTP request
+            http.setRequestMethod("GET"); // Specify that we are sending an HTTP POST request
+            http.setDoOutput(true);// Http will have a request body
+            // Add an auth token to the request in the HTTP "Authorization" header
+            //http.addRequestProperty("Authorization", "afj232hj2332");
+            // Specify that we would like to receive the server's response in JSON.
+            http.addRequestProperty("Accept", "application/json");
 
             // Connect to the server and send the HTTP request, all the magic happens here
             http.connect();
@@ -61,26 +66,23 @@ public class ServerRegister implements Runnable {
             // request is complete
             reqBody.close();
 
-
-            // By the time we get here, the HTTP response has been received from the server.
-            // Check to make sure that the HTTP response from the server contains a 200
-            // status code, which means "success".  Treat anything else as a failure.
+            // Make sure we succeeded
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 // Get the input stream containing the HTTP response body
                 InputStream respBody = http.getInputStream();
 
                 // Extract JSON data from the HTTP response body
-                String respData = ServerReadWrite.readString(respBody);
+                String respData = readString(respBody);
 
-                //Makes the register result from the response
-                registerResult = gson.fromJson(respData, registerResult.getClass());
+                //Make the result
+                eventResult = gson.fromJson(respData, EventResult.class);
+
                 // Display the JSON data returned from the server
                 System.out.println(respData);
 
-                //TODO Cache the answers
-                DataCache.getInstance().registerResult = registerResult;
-                System.out.println("Data Cached for register");
-
+                //Cache the data
+                DataCache.getInstance().events = eventResult.getEventList();
+                System.out.println("Data Cached for Event");
 
             } else {
                 // The HTTP response status code indicates an error
@@ -91,9 +93,9 @@ public class ServerRegister implements Runnable {
                 InputStream respBody = http.getErrorStream();
 
                 // Extract data from the HTTP response body
-                String respData = ServerReadWrite.readString(respBody);
+                String respData = readString(respBody);
 
-                // Display the data returned from the server, we failed tho
+                // Display the data returned from the server
                 System.out.println(respData);
             }
         } catch (IOException e) {
@@ -109,8 +111,3 @@ public class ServerRegister implements Runnable {
         theHandler.sendMessage(message);
     }
 }
-
-
-
-
-

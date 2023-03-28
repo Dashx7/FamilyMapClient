@@ -6,12 +6,15 @@ import java.util.Set;
 
 import Model.Event;
 import Model.Person;
+import Result.LoginResult;
+import Result.RegisterResult;
 
 public class DataCache {
 
     //public String SERVERPORT = "";
 
     private static DataCache instance = new DataCache();
+    //FIXME if you want it to be nice don't initialize
     private static Settings settings = new Settings();
 
     public static DataCache getInstance() {
@@ -25,6 +28,7 @@ public class DataCache {
 
     }
     public List<Event> events;
+    public Person theUserPerson;
     public List<Person> people;
 
     public Map<Integer,Person> peopleMap; //Person ID, person
@@ -33,5 +37,9 @@ public class DataCache {
 
     public Set<Integer> paternalAncestors;
     public Set<Integer> maternalAncestors;
+
+    public RegisterResult registerResult;
+    public LoginResult loginResult;
+
 
 }

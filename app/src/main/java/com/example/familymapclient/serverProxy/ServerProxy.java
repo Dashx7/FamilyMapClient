@@ -2,19 +2,22 @@ package com.example.familymapclient.serverProxy;
 
 import static com.example.familymapclient.serverProxy.ServerReadWrite.readString;
 
+import android.os.Handler;
+
+import com.example.familymapclient.cache.DataCache;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import Request.EventRequest;
 import Request.LoginRequest;
 import Request.RegisterRequest;
 import Result.EventResult;
-import Result.LoginResult;
-import Result.RegisterResult;
 
 public class ServerProxy { //extends Thread
 
@@ -27,14 +30,42 @@ public class ServerProxy { //extends Thread
         serverPort = port;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest){
-        ServerRegister serverRegister = new ServerRegister();
-        return serverRegister.register(registerRequest, serverHost,serverPort);
+
+    public void register(RegisterRequest registerRequest, Handler theHandler){
+        //Executor
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        ServerRegister serverRegister = new ServerRegister(registerRequest,serverHost,serverPort, theHandler);
+        executor.execute(serverRegister);
+
     }
-    public LoginResult login(LoginRequest theRequest){
-        ServerLogin serverLogin = new ServerLogin();
-        return serverLogin.login(theRequest, serverHost,serverPort);
+    public void login(LoginRequest theRequest, Handler theHandler){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        ServerLogin serverLogin = new ServerLogin(theRequest, serverHost, serverPort, theHandler);
+        executor.execute(serverLogin);
     }
+
+    public void cacheEvents(EventRequest eventRequest, Handler theHandler) {
+        //TODO
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        //ServerLogin serverLogin = new (eventRequest, serverHost, serverPort, theHandler);
+        //executor.execute(serverLogin);
+    }
+    public void cachePeople(String authtoken, Handler theHandler) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        ServerPerson serverPerson = new ServerPerson(authtoken, serverHost, serverPort, theHandler);
+        executor.execute(serverPerson);
+    }
+    public void cachePeopleWithID(String authtoken, Handler theHandler, String ID) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        ServerPersonWithID serverPersonWithID = new ServerPersonWithID(authtoken, ID, serverHost, serverPort, theHandler);
+        executor.execute(serverPersonWithID);
+    }
+
 
 
     public EventResult getEvents(EventRequest theRequest) {

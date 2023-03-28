@@ -8,6 +8,9 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -23,6 +26,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.databinding.FragmentLoginBinding;
 
 import com.example.familymapclient.R;
@@ -40,16 +44,23 @@ public class LoginFragment extends Fragment {
 
 
     private Listener listener;
-    public interface Listener{
-        void notifyDone(); //The heck is this?
+
+    public interface Listener {
+        void notifyDone();
+        void notifyLoginIsDone(String message);
+        void notifyLoginFailed(String message);
+        void notifyRegisterIsDone(String message);
+        void notifyRegisterFailed(String message);
+
     }
 
-    public void registerListener(Listener listener){
+    public void registerListener(Listener listener) {
         this.listener = listener;
     }
 
 
-    @Nullable @Override
+    @Nullable
+    @Override
     //When it is created
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -88,10 +99,10 @@ public class LoginFragment extends Fragment {
                 if (loginFormState == null) {
                     return;
                 }
-                if(loginFormState.isDataValidForLogin()){
+                if (loginFormState.isDataValidForLogin()) {
                     loginButton.setEnabled(loginFormState.isDataValidForLogin());
                 }
-                if(loginFormState.isDataValidForAll){
+                if (loginFormState.isDataValidForAll) {
                     registerButton.setEnabled(loginFormState.isDataValidForLogin());
                 }
                 if (loginFormState.getUsernameError() != null) {
@@ -135,10 +146,9 @@ public class LoginFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 int radioID = genderRadioGroup.getCheckedRadioButtonId();
                 String gender = null;
-                if (radioID == radioButton1.getId()){
+                if (radioID == radioButton1.getId()) {
                     gender = "M";
-                }
-                else if (radioID == radioButton2.getId()){
+                } else if (radioID == radioButton2.getId()) {
                     gender = "F";
                 }
                 loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
@@ -152,17 +162,15 @@ public class LoginFragment extends Fragment {
             }
         };
 
-        genderRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
+        genderRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int id) {
                 int radioID = genderRadioGroup.getCheckedRadioButtonId();
                 String gender = null;
                 //Or just say radioID = id;
-                if (radioID == radioButton1.getId()){
+                if (radioID == radioButton1.getId()) {
                     gender = "M";
-                }
-                else if (radioID == radioButton2.getId()){
+                } else if (radioID == radioButton2.getId()) {
                     gender = "F";
                 }
                 loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
@@ -203,6 +211,7 @@ public class LoginFragment extends Fragment {
 
 
         //Sign in and Register buttons
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,13 +227,28 @@ public class LoginFragment extends Fragment {
 
                 ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
                         portEditText.getText().toString());
-                Result.LoginResult result = serverProxy.login(loginRequest);
-                if(result.isSuccess()){
-                    listener.notifyDone();
-                }
-                else {
 
-                }
+                Handler handler = new Handler(Looper.getMainLooper()){
+                    @Override
+                    public void handleMessage(@NonNull Message msg){
+                        super.handleMessage(msg);
+                        if(msg.getData().getBoolean("SuccessMessage")){
+                            serverProxy.cachePeople(DataCache.getInstance().loginResult.getAuthtoken(),this);
+                            serverProxy.cachePeopleWithID(DataCache.getInstance().loginResult.getAuthtoken(),this,
+                                    DataCache.getInstance().loginResult.getPersonID());
+
+                            String welcome = "Welcome: " + DataCache.getInstance().theUserPerson.getFirsName() + ", " +
+                                    DataCache.getInstance().theUserPerson.getLastName();
+                            Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
+
+                            listener.notifyDone();
+                        }
+                        else if(msg.getData().getBoolean("SuccessMessage")==false){
+                            Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                };
+                serverProxy.login(loginRequest, handler);
 
             }
         });
@@ -245,51 +269,53 @@ public class LoginFragment extends Fragment {
 
                 //Radio button logic
                 int radioID = genderRadioGroup.getCheckedRadioButtonId();
-                if (radioID == radioButton1.getId()){
+                if (radioID == radioButton1.getId()) {
                     registerRequest.setGender("m");
-                }
-                else if (radioID == radioButton2.getId()){
+                } else if (radioID == radioButton2.getId()) {
                     registerRequest.setGender("f");
                 }
 
+                Handler handler = new Handler(Looper.getMainLooper()){
+                    @Override
+                    public void handleMessage(@NonNull Message msg){
+                        super.handleMessage(msg);
+                        if(msg.getData().getBoolean("SuccessMessage")){
+                            String welcome = "Welcome: " + DataCache.getInstance().registerResult.getUsername();
+                            Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
+
+                            listener.notifyDone();
+                        }
+                        else{
+                            Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                };
                 //Create a serverProxy
                 ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
                         portEditText.getText().toString());
-
-
-
-                serverProxy.register(registerRequest); //register it
-
-                Result.RegisterResult result = serverProxy.register(registerRequest);
-                if(result==null){
-                    System.out.println("I messed up");
-                }
-                else if(result.isSuccess()){
-                    listener.notifyDone();
-                }
-                else {
-
-                }
+                
+                serverProxy.register(registerRequest,handler); //register it
 
             }
         });
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        if (getContext() != null && getContext().getApplicationContext() != null) {
-            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-        }
+//        String welcome = getString(R.string.welcome) + model.getDisplayName();
+//        // TODO : initiate successful logged in experience
+//        if (getContext() != null && getContext().getApplicationContext() != null) {
+//            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+//        }
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        if (getContext() != null && getContext().getApplicationContext() != null) {
-            Toast.makeText(
-                    getContext().getApplicationContext(),
-                    errorString,
-                    Toast.LENGTH_LONG).show();
-        }
+//        if (getContext() != null && getContext().getApplicationContext() != null) {
+//            Toast.makeText(
+//                    getContext().getApplicationContext(),
+//                    errorString,
+//                    Toast.LENGTH_LONG).show();
+//        }
     }
 
     @Override
