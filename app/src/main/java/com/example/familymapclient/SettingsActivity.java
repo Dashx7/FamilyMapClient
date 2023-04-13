@@ -1,9 +1,12 @@
 package com.example.familymapclient;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
@@ -29,7 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        //My switches
+        //Creating all of my switches
         Switch switchFamilyTreeLines = findViewById(R.id.switchFamilyTreeLines);
         Switch switchLifeStoryLines = findViewById(R.id.switchLifeStoryLines);
         Switch switchSpouseLines = findViewById(R.id.switchSpouseLines);
@@ -47,10 +50,10 @@ public class SettingsActivity extends AppCompatActivity {
         switchFemaleEvents.setChecked(Settings.isFilterOutFemale);
         switchMaleEvents.setChecked(Settings.isFilterOutMale);
 
-        switchFamilyTreeLines.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        //My listener that just puts all the settings in place
+        CompoundButton.OnCheckedChangeListener myListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //Updates all my settings here when any is clicked
                 Settings.isFamilyTreeLines = switchFamilyTreeLines.isChecked();
                 Settings.isSpouseLines = switchSpouseLines.isChecked();
                 Settings.isLifeStoryLines = switchLifeStoryLines.isChecked();
@@ -59,8 +62,25 @@ public class SettingsActivity extends AppCompatActivity {
                 Settings.isFilterOutMale = switchMaleEvents.isChecked();
                 Settings.isFilterOutFemale = switchFemaleEvents.isChecked();
             }
-        });
+        };
 
+        //Putting that listener on all of my switches
+        switchFamilyTreeLines.setOnCheckedChangeListener(myListener);
+        switchLifeStoryLines.setOnCheckedChangeListener(myListener);
+        switchSpouseLines.setOnCheckedChangeListener(myListener);
+        switchFathersSide.setOnCheckedChangeListener(myListener);
+        switchMothersSide.setOnCheckedChangeListener(myListener);
+        switchFemaleEvents.setOnCheckedChangeListener(myListener);
+        switchMaleEvents.setOnCheckedChangeListener(myListener);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        return true;
     }
 
 //    public static class SettingsFragment extends PreferenceFragmentCompat {

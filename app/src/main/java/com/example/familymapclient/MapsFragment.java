@@ -9,12 +9,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.cache.Settings;
@@ -30,6 +33,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import Model.Event;
 import Model.Person;
 import Request.EventRequest;
@@ -44,18 +51,20 @@ import Request.EventRequest;
 //Write the other server proxy classes?
 public class MapsFragment extends Fragment {
 
-    GoogleMap googleMap;
+    //Colors to use
     float googleColorBirth = BitmapDescriptorFactory.HUE_GREEN;
     float googleColorMarriage = BitmapDescriptorFactory.HUE_AZURE;
     float googleColorDeadAsADoorNail = BitmapDescriptorFactory.HUE_RED;
 
-    public void drawAllLines(Event startEvent){
-    }
+    ImageView imageView = null;
+    TextView eventText = null;
+    Layout eventLayout = null;
 
-
+    //Menu section
     @Override
-    public void onCreate(Bundle bundle){
-        super.onCreate(bundle);
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.fragment_maps);
         setHasOptionsMenu(true);
     }
     @Override
@@ -69,22 +78,27 @@ public class MapsFragment extends Fragment {
         searchMenuItem.setEnabled(true);
         settingsMenuItem.setEnabled(true);
     }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.settingsMenuButton) {
             //Get activity is the current context
             Intent intent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(intent);
-        } else if (item.getItemId() == R.id.searchMenuButton) {
+        }
+        else if (item.getItemId() == R.id.searchMenuButton) {
             Intent intent = new Intent(getActivity(), SearchActivity.class);
+            startActivity(intent);
+        }
+        else if(item.getItemId() == android.R.id.home){
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
         return true;
     }
 
 
-    public void drawLine(Event startEvent, Event endEvent, float googleColor, float width){
+    public void drawLine(Event startEvent, Event endEvent, float googleColor, float width, GoogleMap googleMap){
         LatLng startPoint = new LatLng(startEvent.getLatitude(),startEvent.getLongitude());
         LatLng endpoint = new LatLng(endEvent.getLatitude(),endEvent.getLongitude());
 
@@ -98,8 +112,10 @@ public class MapsFragment extends Fragment {
         //line.remove();
     }
 
+    //Adding a marker
     public void addMarker(GoogleMap googleMap, Event event){
-        float myColor = BitmapDescriptorFactory.HUE_YELLOW; //SHOULD NOT BE YELLOW
+        //IF YOU SEE YELLOW I HAVE FUCKED UP
+        float myColor = BitmapDescriptorFactory.HUE_YELLOW;
         if(event.getEventType().compareTo("birth") ==0){
             myColor = googleColorBirth;
         }
@@ -128,10 +144,7 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
+            //After we cache the events
             Handler handler = new Handler(Looper.getMainLooper()) {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
@@ -174,12 +187,27 @@ public class MapsFragment extends Fragment {
                         public boolean onMarkerClick(@NonNull Marker marker) {
                             //Create a event activity and send it the mapFragment
                             Event markerEvent = (Event) marker.getTag();
+                            //Map<String, List<Person>> peopleMap =  DataCache.getInstance().peopleMap;
+                            Person person = DataCache.getInstance().peopleMap.get(markerEvent.getPersonID()); //List of 1
+                            String name = person.getFirsName() + " " + person.getLastName();
+                            String birth = "Birth: " + markerEvent.getCity() + ", " + markerEvent.getCountry()
+                                    + "(" + markerEvent.getYear() + ")";
+                            String eventDescription = name + "\n" + birth;
+                            eventText.setText(eventDescription);
+                            if(person.getGender().compareToIgnoreCase("M") == 0){
+                                imageView.setBackgroundResource(R.drawable.ic_male);
+                            }
+                            else if (person.getGender().compareToIgnoreCase("F") == 0) {
+                                imageView.setBackgroundResource(R.drawable.ic_female);
+                            }
+                            else imageView.setBackgroundResource(R.drawable.ic_person); //Not so good
+
 
                             //You could imbed a "single event" fragment
                             // could change the text to be the event
                             //Make the event there and have it be unselected
 
-                            return false; //FIXME IDK what to put here
+                            return true; //FIXME IDK what to put here
                         }
                     };
                     googleMap.setOnMarkerClickListener(onMarkerClickListener);
@@ -212,17 +240,33 @@ public class MapsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        View view = inflater.inflate(R.layout.fragment_maps, container, false);
+        imageView = view.findViewById(R.id.iconForEvent);
+        eventText = view.findViewById(R.id.mapTextView);
+        imageView.setBackgroundResource(R.drawable.ic_person);
+        //eventText.setText("TEST");
+        //TextView eventTextTest = getView().findViewById(R.id.mapTextView);
+        View layout = view.findViewById(R.id.eventSection);
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Where I go to Person
+            }
+        });
+
+        return view;
+
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+
 
     }
 

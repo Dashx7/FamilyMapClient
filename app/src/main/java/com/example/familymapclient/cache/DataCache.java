@@ -33,16 +33,14 @@ public class DataCache {
 
     public void fillPeople(List<Person> toAdd){
 
-        Map<String,List<Person>> tempDebug = peopleMap;
+        Map<String,Person> tempDebug = peopleMap;
         for(Person daPerson: toAdd){
-            String key = theUserPerson.getPersonID();
-            if(peopleMap.get(key)!=null){
-                peopleMap.get(key).add(daPerson);
+            String key = daPerson.getPersonID();
+            if(peopleMap.get(key)==null){
+                peopleMap.put(key,daPerson);
             }
             else{
-                List<Person> temp = new ArrayList<>();
-                temp.add(daPerson);
-                peopleMap.put(key, temp);
+                throw new RuntimeException("Not supposed to happen");
             }
         }
     }
@@ -71,7 +69,7 @@ public class DataCache {
 //        }
         //Should be filled right?
     }
-    public Map<String,List<Person>> peopleMap = new HashMap<>(); //Person ID as a string, person
+    public Map<String,Person> peopleMap = new HashMap<>(); //Person ID as a string, person
     public Map<String, List<Event>> eventMap = new HashMap<>(); //EventID, Event
     public Map<String, List<Event>> eventMapAssociatedUsername = new HashMap<>(); // Associated Username, Event
     public Map<String, List<Event>> eventMapPersonID = new HashMap<>(); // PersonID, Event

@@ -14,53 +14,15 @@ import android.widget.Toast;
 
 import com.example.familymapclient.ui.login.LoginFragment;
 
-//listeners they wait for another method to get called and will notify it
-//Main activity will create a Login fragment will have a listener, and when it is called MA is notified
-
 //TODO
-//Make the settings activity
-
-
-//The header thing, where do I find out how to do the icons and setting
-//Just the display issue for the fragment
-
 //On marker click how do I display the event
 
+
 //Unknown fragment in the mapfragment xml
+//Messing up my design tab
+//Make the linear layout clickable? Just the text?
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener{
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.menu_resource_file, menu);
-//
-//        MenuItem searchMenuItem = menu.findItem(R.id.searchMenuButton);
-//        MenuItem settingsMenuItem = menu.findItem(R.id.settingsMenuButton);
-//
-//        searchMenuItem.setEnabled(true);
-//        settingsMenuItem.setEnabled(true);
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem menu) {
-//        switch(menu.getItemId()) {
-//            case R.id.searchMenuButton:
-//
-//                //Intent would go here
-//                //Toast.makeText(this, getString(R.string.fileMenuSelectedMessage), Toast.LENGTH_SHORT).show();
-//                return true;
-//            case R.id.settingsMenuButton:
-//
-//                //Toast.makeText(this, getString(R.string.personMenuSelectedMessage), Toast.LENGTH_SHORT).show();
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(menu);
-//        }
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
 
         //Swap the screen with the map fragment previously made
         fragmentManager.beginTransaction().replace(R.id.fragmentFrameLayout,fragment).commit();
+        //setContentView();
     }
     @Override
     public void notifyLoginIsDone(String message) {
