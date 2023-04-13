@@ -25,6 +25,9 @@ public class LoginViewModel extends ViewModel {
     LiveData<LoginFormState> getLoginFormState() {
         return loginFormState;
     }
+    LiveData<LoginFormState> getLoginFormStateForLogin() {
+        return loginFormStateForLogin;
+    }
 
     LiveData<LoginResult> getLoginResult() {
         return loginResult;

@@ -1,12 +1,9 @@
 package com.example.familymapclient.serverProxy;
-
+//To avoid code duplications
 import static com.example.familymapclient.serverProxy.ServerReadWrite.readString;
 
+//Imports
 import android.os.Handler;
-
-import com.example.familymapclient.cache.DataCache;
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,7 +16,7 @@ import Request.LoginRequest;
 import Request.RegisterRequest;
 import Result.EventResult;
 
-public class ServerProxy { //extends Thread
+public class ServerProxy {
 
     String serverHost = "10.0.2.2";
     String serverPort = "8080";
@@ -46,12 +43,17 @@ public class ServerProxy { //extends Thread
         executor.execute(serverLogin);
     }
 
-    public void cacheEvents(EventRequest eventRequest, Handler theHandler) {
-        //TODO
+    public void cacheEvents(EventRequest eventRequest, Handler theHandler, String authToken) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        //ServerLogin serverLogin = new (eventRequest, serverHost, serverPort, theHandler);
-        //executor.execute(serverLogin);
+        ServerEvent serverLogin = new ServerEvent(eventRequest, serverHost, serverPort, theHandler, authToken);
+        executor.execute(serverLogin);
+    }
+    public void cachePeople(String authtoken) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        ServerPerson serverPerson = new ServerPerson(authtoken, serverHost, serverPort);
+        executor.execute(serverPerson);
     }
     public void cachePeople(String authtoken, Handler theHandler) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -59,7 +61,7 @@ public class ServerProxy { //extends Thread
         ServerPerson serverPerson = new ServerPerson(authtoken, serverHost, serverPort, theHandler);
         executor.execute(serverPerson);
     }
-    public void cachePeopleWithID(String authtoken, Handler theHandler, String ID) {
+    public void cacheUserPeopleWithID(String authtoken, Handler theHandler, String ID) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         ServerPersonWithID serverPersonWithID = new ServerPersonWithID(authtoken, ID, serverHost, serverPort, theHandler);

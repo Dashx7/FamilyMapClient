@@ -57,7 +57,7 @@ public class ServerLogin implements Runnable {
 
             // This is the JSON string we will send in the HTTP request body
             Gson gson = new Gson();
-            String reqData = gson.toJson(theRequest, theRequest.getClass());
+            String reqData = gson.toJson(theRequest, LoginRequest.class);
 
             // Get the output stream containing the HTTP request body
             OutputStream reqBody = http.getOutputStream();
@@ -79,13 +79,13 @@ public class ServerLogin implements Runnable {
 
                 //Make the result
                 loginResult = gson.fromJson(respData, LoginResult.class);
-                DataCache.getInstance().loginResult = loginResult;
 
                 // Display the JSON data returned from the server
                 System.out.println(respData);
 
                 //Cache the data
                 DataCache.getInstance().loginResult = loginResult;
+                DataCache.getInstance().authToken = loginResult.getAuthtoken();
                 System.out.println("Data Cached for login");
 
                 Bundle myBundle = new Bundle();

@@ -1,5 +1,8 @@
 package com.example.familymapclient.cache;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,33 +13,72 @@ import Result.LoginResult;
 import Result.RegisterResult;
 
 public class DataCache {
-
-    //public String SERVERPORT = "";
-
     private static DataCache instance = new DataCache();
-    //FIXME if you want it to be nice don't initialize
-    private static Settings settings = new Settings();
+
+    public String serverPort;
+    public String serverHost;
+    public String authToken;
 
     public static DataCache getInstance() {
         return instance;
     }
-    public static Settings getSettings() {
-        return settings;
-    }
+
 
     private DataCache(){
 
     }
-    public List<Event> events;
+    public List<Event> events; //Just straight up every event
     public Person theUserPerson;
     public List<Person> people;
 
-    public Map<Integer,Person> peopleMap; //Person ID, person
-    public Map<Integer, Event> eventMap; //EventID, Event
-    public Map<Integer, List<Event>> personEvents;
+    public void fillPeople(List<Person> toAdd){
 
-    public Set<Integer> paternalAncestors;
-    public Set<Integer> maternalAncestors;
+        Map<String,List<Person>> tempDebug = peopleMap;
+        for(Person daPerson: toAdd){
+            String key = theUserPerson.getPersonID();
+            if(peopleMap.get(key)!=null){
+                peopleMap.get(key).add(daPerson);
+            }
+            else{
+                List<Person> temp = new ArrayList<>();
+                temp.add(daPerson);
+                peopleMap.put(key, temp);
+            }
+        }
+    }
+    public void fillEvents(List<Event> toAdd){
+        //Map<String,List<Person>> tempDebug = peopleMap;
+        for(Event daEvent: toAdd){
+            String key = daEvent.getEventID();
+            if(eventMap.get(key)!=null){
+                eventMap.get(key).add(daEvent);
+            }
+            else{
+                List<Event> listEventToAdd = new ArrayList<>();
+                listEventToAdd.add(daEvent);
+                eventMap.put(key, listEventToAdd);
+            }
+        }
+//        for(Event daEvent: toAdd){
+//            eventMap.put(Integer.valueOf(daEvent.getEventID()), daEvent);
+//        }
+//        for(Event daEvent: toAdd){
+//            eventMapAssociatedUsername.put(daEvent.getAssociatedUsername(), daEvent);
+//        }
+//        for(Event daEvent: toAdd){
+//            //if(eventMapPersonID)
+//            //eventMapPersonID.put(daEvent.getPersonID(), daEvent);
+//        }
+        //Should be filled right?
+    }
+    public Map<String,List<Person>> peopleMap = new HashMap<>(); //Person ID as a string, person
+    public Map<String, List<Event>> eventMap = new HashMap<>(); //EventID, Event
+    public Map<String, List<Event>> eventMapAssociatedUsername = new HashMap<>(); // Associated Username, Event
+    public Map<String, List<Event>> eventMapPersonID = new HashMap<>(); // PersonID, Event
+    public Map<Integer, List<Event>> personEvents = new HashMap<>();
+
+    public Set<Integer> paternalAncestors = new HashSet<>();
+    public Set<Integer> maternalAncestors = new HashSet<>();
 
     public RegisterResult registerResult;
     public LoginResult loginResult;

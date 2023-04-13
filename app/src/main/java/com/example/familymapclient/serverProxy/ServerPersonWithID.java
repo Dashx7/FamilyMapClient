@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import Model.Person;
 import Result.EventResult;
 import Result.PersonResult;
 
@@ -70,8 +71,15 @@ public class ServerPersonWithID implements Runnable{
                 System.out.println(respData);
 
                 //Cache the data
-                DataCache.getInstance().theUserPerson = personResult.getData().get(0);
+                DataCache.getInstance().theUserPerson = personResult.setSingularPerson();
+                DataCache.getInstance().authToken = authToken;
                 System.out.println("Data Cached for Single Person");
+                Bundle myBundle = new Bundle();
+                myBundle.putBoolean("SuccessMessagePersonWithID", true);
+                Message message = Message.obtain();
+                message.setData(myBundle);
+
+                theHandler.sendMessage(message);
 
             } else {
                 // The HTTP response status code indicates an error
@@ -86,17 +94,17 @@ public class ServerPersonWithID implements Runnable{
 
                 // Display the data returned from the server
                 System.out.println(respData);
+                Bundle myBundle = new Bundle();
+                myBundle.putBoolean("SuccessMessagePersonWithID", false);
+                Message message = Message.obtain();
+                message.setData(myBundle);
+
+                theHandler.sendMessage(message);
             }
         } catch (IOException e) {
             // An exception was thrown, so display the exception's stack trace
             e.printStackTrace();
         }
 
-//        Bundle myBundle = new Bundle();
-//        myBundle.putBoolean("SuccessMessagePersonWithID", true);
-//        Message message = Message.obtain();
-//        message.setData(myBundle);
-//
-//        theHandler.sendMessage(message);
     }
 }

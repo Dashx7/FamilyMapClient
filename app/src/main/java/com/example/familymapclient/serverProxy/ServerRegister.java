@@ -79,7 +79,15 @@ public class ServerRegister implements Runnable {
 
                 //TODO Cache the answers
                 DataCache.getInstance().registerResult = registerResult;
+                DataCache.getInstance().authToken = registerResult.getAuthtoken();
                 System.out.println("Data Cached for register");
+
+                Bundle myBundle = new Bundle();
+                myBundle.putBoolean("SuccessMessage", true);
+                Message message = Message.obtain();
+                message.setData(myBundle);
+
+                theHandler.sendMessage(message);
 
 
             } else {
@@ -95,18 +103,20 @@ public class ServerRegister implements Runnable {
 
                 // Display the data returned from the server, we failed tho
                 System.out.println(respData);
+
+                Bundle myBundle = new Bundle();
+                myBundle.putBoolean("SuccessMessage", false);
+                Message message = Message.obtain();
+                message.setData(myBundle);
+
+                theHandler.sendMessage(message);
             }
         } catch (IOException e) {
             // An exception was thrown, so display the exception's stack trace
             e.printStackTrace();
         }
 
-        Bundle myBundle = new Bundle();
-        myBundle.putBoolean("SuccessMessage", true);
-        Message message = Message.obtain();
-        message.setData(myBundle);
 
-        theHandler.sendMessage(message);
     }
 }
 

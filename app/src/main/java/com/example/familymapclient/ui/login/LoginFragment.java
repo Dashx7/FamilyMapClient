@@ -71,6 +71,7 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
@@ -83,9 +84,14 @@ public class LoginFragment extends Fragment {
         final EditText lastNameEditText = binding.LastName;
         final EditText emailEditText = binding.email;
 
+        usernameEditText.setText("username");
+        passwordEditText.setText("password");
+        hostEditText.setText("10.0.2.2");
+        portEditText.setText("8080");
+
         final RadioGroup genderRadioGroup = binding.radioGroup2;
-        RadioButton radioButton1 = binding.radioButton;
-        RadioButton radioButton2 = binding.radioButton2;
+        final RadioButton radioButton1 = binding.radioButton;
+        final RadioButton radioButton2 = binding.radioButton2;
 
 
         final Button loginButton = binding.login;
@@ -99,12 +105,26 @@ public class LoginFragment extends Fragment {
                 if (loginFormState == null) {
                     return;
                 }
-                if (loginFormState.isDataValidForLogin()) {
-                    loginButton.setEnabled(loginFormState.isDataValidForLogin());
+                loginButton.setEnabled(loginFormState.isDataValidForLogin());
+                registerButton.setEnabled(loginFormState.isDataValidForAll);
+
+                if (loginFormState.getUsernameError() != null) {
+                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
-                if (loginFormState.isDataValidForAll) {
-                    registerButton.setEnabled(loginFormState.isDataValidForLogin());
+                if (loginFormState.getPasswordError() != null) {
+                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
                 }
+            }
+        });
+        loginViewModel.getLoginFormStateForLogin().observe(getViewLifecycleOwner(), new Observer<LoginFormState>() {
+            @Override
+            public void onChanged(@Nullable LoginFormState loginFormState) {
+                if (loginFormState == null) {
+                    return;
+                }
+                loginButton.setEnabled(loginFormState.isDataValidForLogin());
+                registerButton.setEnabled(loginFormState.isDataValidForAll);
+
                 if (loginFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
@@ -195,7 +215,6 @@ public class LoginFragment extends Fragment {
         emailEditText.addTextChangedListener(afterTextChangedListener);
 
 
-        //genderRadioGroup has another watcher somewhere else
 
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -215,6 +234,7 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
 
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
@@ -233,15 +253,34 @@ public class LoginFragment extends Fragment {
                     public void handleMessage(@NonNull Message msg){
                         super.handleMessage(msg);
                         if(msg.getData().getBoolean("SuccessMessage")){
-                            serverProxy.cachePeople(DataCache.getInstance().loginResult.getAuthtoken(),this);
-                            serverProxy.cachePeopleWithID(DataCache.getInstance().loginResult.getAuthtoken(),this,
+                            Handler handler2 = new Handler(Looper.getMainLooper()) {
+                                @Override
+                                public void handleMessage(@NonNull Message msg) {
+                                    super.handleMessage(msg);
+
+                                    DataCache test = DataCache.getInstance();
+                                    String welcome = "Welcome: " + DataCache.getInstance().theUserPerson.getFirsName() + ", " +
+                                            DataCache.getInstance().theUserPerson.getLastName();
+                                    Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
+
+                                    DataCache.getInstance().serverHost = hostEditText.getText().toString();
+                                    DataCache.getInstance().serverPort = portEditText.getText().toString();
+
+                                    //This is the problem figure it out
+                                    Handler handler3 = new Handler(Looper.getMainLooper()){
+                                        @Override
+                                        public void handleMessage(@NonNull Message msg) {
+                                            listener.notifyDone();
+                                        }
+                                    };
+
+                                    serverProxy.cachePeople(DataCache.getInstance().loginResult.getAuthtoken(), handler3);
+
+                                }
+                            };
+                            serverProxy.cacheUserPeopleWithID(DataCache.getInstance().loginResult.getAuthtoken(), handler2,
                                     DataCache.getInstance().loginResult.getPersonID());
 
-                            String welcome = "Welcome: " + DataCache.getInstance().theUserPerson.getFirsName() + ", " +
-                                    DataCache.getInstance().theUserPerson.getLastName();
-                            Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
-
-                            listener.notifyDone();
                         }
                         else if(msg.getData().getBoolean("SuccessMessage")==false){
                             Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
@@ -275,15 +314,40 @@ public class LoginFragment extends Fragment {
                     registerRequest.setGender("f");
                 }
 
+                //Create a serverProxy
+                ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
+                        portEditText.getText().toString());
+
                 Handler handler = new Handler(Looper.getMainLooper()){
                     @Override
                     public void handleMessage(@NonNull Message msg){
                         super.handleMessage(msg);
                         if(msg.getData().getBoolean("SuccessMessage")){
-                            String welcome = "Welcome: " + DataCache.getInstance().registerResult.getUsername();
-                            Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
+                            Handler handler2 = new Handler(Looper.getMainLooper()) {
+                                @Override
+                                public void handleMessage(@NonNull Message msg) {
+                                    if(msg.getData().getBoolean("SuccessMessagePersonWithID")){
+                                        super.handleMessage(msg);
+                                        String welcome = "Welcome: " + DataCache.getInstance().theUserPerson.getFirsName() + ", " +
+                                                DataCache.getInstance().theUserPerson.getLastName();
 
-                            listener.notifyDone();
+                                        //Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
+                                        //Doesn't work, don't question it
+
+                                        DataCache.getInstance().serverHost = hostEditText.getText().toString();
+                                        DataCache.getInstance().serverPort = portEditText.getText().toString();
+
+                                        listener.notifyDone();
+                                    }
+                                    else {
+                                        Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            };
+                            serverProxy.cacheUserPeopleWithID(DataCache.getInstance().registerResult.getAuthtoken(), handler2,
+                                    DataCache.getInstance().registerResult.getPersonID());
+                            serverProxy.cachePeople(DataCache.getInstance().registerResult.getAuthtoken(), handler2);
                         }
                         else{
                             Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
@@ -291,9 +355,7 @@ public class LoginFragment extends Fragment {
 
                     }
                 };
-                //Create a serverProxy
-                ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
-                        portEditText.getText().toString());
+
                 
                 serverProxy.register(registerRequest,handler); //register it
 

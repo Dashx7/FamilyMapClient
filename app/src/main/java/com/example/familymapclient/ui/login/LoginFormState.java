@@ -13,7 +13,6 @@ class LoginFormState {
     public boolean isDataValidForLogin;
     public boolean isDataValidForAll;
 
-    //Default mfing constructor, used for valid for All
     LoginFormState() {
     }
     LoginFormState(@Nullable Integer usernameError, @Nullable Integer passwordError) {

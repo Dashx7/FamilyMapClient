@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import Model.Event;
 import Request.EventRequest;
 import Result.EventResult;
 
@@ -25,27 +26,28 @@ public class ServerEvent implements Runnable{
     String serverPort;
     Handler theHandler;
     EventResult eventResult;
+    String authToken;
 
-    public ServerEvent(EventRequest theRequest, String serverHost, String serverPort, Handler theHandler) {
+    public ServerEvent(EventRequest theRequest, String serverHost, String serverPort, Handler theHandler, String authtoken) {
         this.theRequest = theRequest;
         this.serverHost = serverHost;
         this.serverPort = serverPort;
         this.theHandler = theHandler;
+        this.authToken = authtoken;
     }
 
 
     @Override
     public void run() {
-        // Login is a post request
         try {
             // Create a URL indicating where the server is running, and which
             // web API operation we want to call
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/event");
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();// Start constructing our HTTP request
-            http.setRequestMethod("GET"); // Specify that we are sending an HTTP POST request
-            http.setDoOutput(true);// Http will have a request body
+            HttpURLConnection http = (HttpURLConnection) url.openConnection(); // Start constructing our HTTP request
+            http.setRequestMethod("GET"); // Specify that we are sending an HTTP GET request
+            http.setDoOutput(false);// Http will NOT have a request body as it is just grabbing events
             // Add an auth token to the request in the HTTP "Authorization" header
-            //http.addRequestProperty("Authorization", "afj232hj2332");
+            http.addRequestProperty("Authorization", authToken);
             // Specify that we would like to receive the server's response in JSON.
             http.addRequestProperty("Accept", "application/json");
 
@@ -55,16 +57,6 @@ public class ServerEvent implements Runnable{
             // This is the JSON string we will send in the HTTP request body
             Gson gson = new Gson();
             String reqData = gson.toJson(theRequest, theRequest.getClass());
-
-            // Get the output stream containing the HTTP request body
-            OutputStream reqBody = http.getOutputStream();
-
-            // Write the JSON data to the request body
-            ServerReadWrite.writeString(reqData, reqBody);
-
-            // Close the request body output stream, indicating that the
-            // request is complete
-            reqBody.close();
 
             // Make sure we succeeded
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
@@ -81,7 +73,11 @@ public class ServerEvent implements Runnable{
                 System.out.println(respData);
 
                 //Cache the data
-                DataCache.getInstance().events = eventResult.getEventList();
+//                for(Event event : eventResult.getEventList()){
+//                    DataCache.getInstance().events.add(event); //This will be all the events in one place
+//                }
+                DataCache.getInstance().events = eventResult.getEventList(); //Everyone associated with the user is here now
+                DataCache.getInstance().fillEvents(eventResult.getEventList()); //This one with the maps
                 System.out.println("Data Cached for Event");
 
             } else {

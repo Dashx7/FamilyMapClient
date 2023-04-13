@@ -31,6 +31,12 @@ public class ServerPerson implements Runnable{
         this.serverPort = serverPort;
         this.theHandler = theHandler;
     }
+    public ServerPerson(String theAuthtoken, String serverHost, String serverPort) {
+        this.authToken = theAuthtoken;
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
+        //this.theHandler = theHandler;
+    }
 
 
     @Override
@@ -61,14 +67,16 @@ public class ServerPerson implements Runnable{
                 // Extract JSON data from the HTTP response body
                 String respData = readString(respBody);
 
-                //Make the result
+                //Make the result, BREAKING?
                 personResult = gson.fromJson(respData, PersonResult.class);
 
                 // Display the JSON data returned from the server
                 System.out.println(respData);
 
-                //Cache the data
+                //Cache the data in both the map and normal
                 DataCache.getInstance().people = personResult.getData();
+                DataCache.getInstance().fillPeople(personResult.getData());
+                DataCache.getInstance().authToken = authToken;
                 System.out.println("Data Cached for Person");
 
             } else {
@@ -90,11 +98,11 @@ public class ServerPerson implements Runnable{
             e.printStackTrace();
         }
 
-//        Bundle myBundle = new Bundle();
-//        myBundle.putBoolean("SuccessMessagePerson", true);
-//        Message message = Message.obtain();
-//        message.setData(myBundle);
-//
-//        theHandler.sendMessage(message);
+        Bundle myBundle = new Bundle();
+        myBundle.putBoolean("SuccessMessagePerson", true);
+        Message message = Message.obtain();
+        message.setData(myBundle);
+
+        theHandler.sendMessage(message);
     }
 }
