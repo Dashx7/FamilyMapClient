@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class EventActivity extends AppCompatActivity {
@@ -13,6 +15,20 @@ public class EventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
+        //setHasOptionsMenu(true);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater myMenuInflater = new MenuInflater(getApplicationContext());
+        myMenuInflater.inflate(R.menu.menu_resource_file, menu);
+
+        //Is this necessary?
+        MenuItem searchMenuItem = menu.findItem(R.id.searchMenuButton);
+        MenuItem settingsMenuItem = menu.findItem(R.id.settingsMenuButton);
+
+        searchMenuItem.setEnabled(true);
+        settingsMenuItem.setEnabled(true);
+        return super.onCreateOptionsMenu(menu);
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

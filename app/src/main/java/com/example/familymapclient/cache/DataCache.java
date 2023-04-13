@@ -29,6 +29,7 @@ public class DataCache {
     }
     public List<Event> events; //Just straight up every event
     public Person theUserPerson;
+    public Person personClickedOn = null;
     public List<Person> people;
 
     public void fillPeople(List<Person> toAdd){
@@ -45,9 +46,10 @@ public class DataCache {
         }
     }
     public void fillEvents(List<Event> toAdd){
-        //Map<String,List<Person>> tempDebug = peopleMap;
         for(Event daEvent: toAdd){
             String key = daEvent.getEventID();
+            String key2 = daEvent.getPersonID();
+            //The eventID to Event map
             if(eventMap.get(key)!=null){
                 eventMap.get(key).add(daEvent);
             }
@@ -56,18 +58,16 @@ public class DataCache {
                 listEventToAdd.add(daEvent);
                 eventMap.put(key, listEventToAdd);
             }
+            //The personID to Event map
+            if(eventMapPersonID.get(key2)!=null){
+                eventMapPersonID.get(key2).add(daEvent);
+            }
+            else{
+                List<Event> listEventToAdd = new ArrayList<>();
+                listEventToAdd.add(daEvent);
+                eventMapPersonID.put(key2, listEventToAdd);
+            }
         }
-//        for(Event daEvent: toAdd){
-//            eventMap.put(Integer.valueOf(daEvent.getEventID()), daEvent);
-//        }
-//        for(Event daEvent: toAdd){
-//            eventMapAssociatedUsername.put(daEvent.getAssociatedUsername(), daEvent);
-//        }
-//        for(Event daEvent: toAdd){
-//            //if(eventMapPersonID)
-//            //eventMapPersonID.put(daEvent.getPersonID(), daEvent);
-//        }
-        //Should be filled right?
     }
     public Map<String,Person> peopleMap = new HashMap<>(); //Person ID as a string, person
     public Map<String, List<Event>> eventMap = new HashMap<>(); //EventID, Event

@@ -15,13 +15,14 @@ import android.widget.Toast;
 import com.example.familymapclient.ui.login.LoginFragment;
 
 //TODO
-//On marker click how do I display the event
+//Figuring out everything of the recyler view
+//Which one do I use for the person
 
 
 //Unknown fragment in the mapfragment xml
 //Messing up my design tab
-//Make the linear layout clickable? Just the text?
 
+//Learn lambda functions one day
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {

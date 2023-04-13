@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.cache.Settings;
+import com.example.familymapclient.model.DataHolder;
 import com.example.familymapclient.serverProxy.ServerProxy;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,11 +63,12 @@ public class MapsFragment extends Fragment {
 
     //Menu section
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.fragment_maps);
         setHasOptionsMenu(true);
     }
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -78,18 +80,17 @@ public class MapsFragment extends Fragment {
         searchMenuItem.setEnabled(true);
         settingsMenuItem.setEnabled(true);
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.settingsMenuButton) {
             //Get activity is the current context
             Intent intent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(intent);
-        }
-        else if (item.getItemId() == R.id.searchMenuButton) {
+        } else if (item.getItemId() == R.id.searchMenuButton) {
             Intent intent = new Intent(getActivity(), SearchActivity.class);
             startActivity(intent);
-        }
-        else if(item.getItemId() == android.R.id.home){
+        } else if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -98,9 +99,9 @@ public class MapsFragment extends Fragment {
     }
 
 
-    public void drawLine(Event startEvent, Event endEvent, float googleColor, float width, GoogleMap googleMap){
-        LatLng startPoint = new LatLng(startEvent.getLatitude(),startEvent.getLongitude());
-        LatLng endpoint = new LatLng(endEvent.getLatitude(),endEvent.getLongitude());
+    public void drawLine(Event startEvent, Event endEvent, float googleColor, float width, GoogleMap googleMap) {
+        LatLng startPoint = new LatLng(startEvent.getLatitude(), startEvent.getLongitude());
+        LatLng endpoint = new LatLng(endEvent.getLatitude(), endEvent.getLongitude());
 
         PolylineOptions options = new PolylineOptions()
                 .add(startPoint)
@@ -113,24 +114,23 @@ public class MapsFragment extends Fragment {
     }
 
     //Adding a marker
-    public void addMarker(GoogleMap googleMap, Event event){
+    public void addMarker(GoogleMap googleMap, Event event) {
         //IF YOU SEE YELLOW I HAVE FUCKED UP
         float myColor = BitmapDescriptorFactory.HUE_YELLOW;
-        if(event.getEventType().compareTo("birth") ==0){
+        if (event.getEventType().compareTo("birth") == 0) {
             myColor = googleColorBirth;
-        }
-        else if (event.getEventType().compareTo("death") ==0) {
+        } else if (event.getEventType().compareTo("death") == 0) {
             myColor = googleColorDeadAsADoorNail;
-        }
-        else if (event.getEventType().compareTo("marriage") ==0) {
+        } else if (event.getEventType().compareTo("marriage") == 0) {
             myColor = googleColorMarriage;
         }
         Marker marker = googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(event.getLatitude(),event.getLongitude()))
+                .position(new LatLng(event.getLatitude(), event.getLongitude()))
                 .icon(BitmapDescriptorFactory.defaultMarker(myColor)));
         marker.setTag(event);//Markers will have tags with their events
 
     }
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -151,33 +151,34 @@ public class MapsFragment extends Fragment {
                     //Means its got the events cached
                     super.handleMessage(msg);
 
+                    //TODO
                     //Marking all events
-                    for(Event event : DataCache.getInstance().events){
-                        addMarker(googleMap,event);
+                    for (Event event : DataCache.getInstance().events) {
+                        addMarker(googleMap, event);
                     }
                     //Drawing the lines
-                    if(Settings.isLifeStoryLines){
+                    if (Settings.isLifeStoryLines) {
 
                     }
-                    if(Settings.isSpouseLines){
-                        for(Person thePerson : DataCache.getInstance().people){
+                    if (Settings.isSpouseLines) {
+                        for (Person thePerson : DataCache.getInstance().people) {
 
-                            if(thePerson.getSpouseID()!=null){ //If they have a spouse
+                            if (thePerson.getSpouseID() != null) { //If they have a spouse
                                 //Event spouseEvents = DataCache.getInstance().eventMapPersonID.get(thePerson.getSpouseID());
                                 //if(thePerson.getSpouseID())
                             }
                         }
                     }
-                    if(Settings.isFilterOutMale){
+                    if (Settings.isFilterOutMale) {
 
                     }
-                    if(Settings.isFilterOutFemale){
+                    if (Settings.isFilterOutFemale) {
 
                     }
-                    if(Settings.isFilterByMomsSide){
+                    if (Settings.isFilterByMomsSide) {
 
                     }
-                    if(Settings.isFilterByDadsSide){
+                    if (Settings.isFilterByDadsSide) {
 
                     }
 
@@ -189,40 +190,36 @@ public class MapsFragment extends Fragment {
                             Event markerEvent = (Event) marker.getTag();
                             //Map<String, List<Person>> peopleMap =  DataCache.getInstance().peopleMap;
                             Person person = DataCache.getInstance().peopleMap.get(markerEvent.getPersonID()); //List of 1
+
+                            DataCache.getInstance().personClickedOn = person;
+
                             String name = person.getFirsName() + " " + person.getLastName();
                             String birth = "Birth: " + markerEvent.getCity() + ", " + markerEvent.getCountry()
                                     + "(" + markerEvent.getYear() + ")";
                             String eventDescription = name + "\n" + birth;
                             eventText.setText(eventDescription);
-                            if(person.getGender().compareToIgnoreCase("M") == 0){
+                            if (person.getGender().compareToIgnoreCase("M") == 0) {
                                 imageView.setBackgroundResource(R.drawable.ic_male);
-                            }
-                            else if (person.getGender().compareToIgnoreCase("F") == 0) {
+                            } else if (person.getGender().compareToIgnoreCase("F") == 0) {
                                 imageView.setBackgroundResource(R.drawable.ic_female);
-                            }
-                            else imageView.setBackgroundResource(R.drawable.ic_person); //Not so good
+                            } else
+                                imageView.setBackgroundResource(R.drawable.ic_person); //Not so good
 
-
-                            //You could imbed a "single event" fragment
-                            // could change the text to be the event
-                            //Make the event there and have it be unselected
-
-                            return true; //FIXME IDK what to put here
+                            return true;
                         }
                     };
                     googleMap.setOnMarkerClickListener(onMarkerClickListener);
                 }
             };
 
-            ServerProxy serverProxy = new ServerProxy(DataCache.getInstance().serverHost,DataCache.getInstance().serverPort);
+            ServerProxy serverProxy = new ServerProxy(DataCache.getInstance().serverHost, DataCache.getInstance().serverPort);
             EventRequest eventRequest = new EventRequest();
-            serverProxy.cacheEvents(eventRequest,handler,DataCache.getInstance().authToken);
-
-
+            serverProxy.cacheEvents(eventRequest, handler, DataCache.getInstance().authToken);
 
 
         }
-        public void testMethod(GoogleMap googleMap, Marker marker){
+
+        public void testMethod(GoogleMap googleMap, Marker marker) {
 //            googleMap.clear();
 //            googleMap.addPolyline();
 //            googleMap.addMarker();
@@ -244,13 +241,15 @@ public class MapsFragment extends Fragment {
         imageView = view.findViewById(R.id.iconForEvent);
         eventText = view.findViewById(R.id.mapTextView);
         imageView.setBackgroundResource(R.drawable.ic_person);
-        //eventText.setText("TEST");
-        //TextView eventTextTest = getView().findViewById(R.id.mapTextView);
         View layout = view.findViewById(R.id.eventSection);
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Where I go to Person
+                //Creating an eventActivity if its been clicked before
+                if (!eventText.getText().equals("Events will appear here")) {
+                    Intent intent = new Intent(getActivity(), PersonActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
