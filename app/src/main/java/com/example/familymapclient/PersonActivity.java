@@ -21,8 +21,11 @@ import com.example.familymapclient.model.DataHolder;
 import com.example.familymapclient.model.FamilyPerson;
 import com.example.familymapclient.model.LifeEvent;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import Model.Event;
 import Model.Person;
 
 public class PersonActivity extends AppCompatActivity {
@@ -38,10 +41,33 @@ public class PersonActivity extends AppCompatActivity {
         //Person stuff
         ExpandableListView expandableListView = findViewById(R.id.expandableListView);
 
+        TextView firstNameText = findViewById(R.id.firstNamePersonActivity);
+        TextView lastNameText = findViewById(R.id.lastNamePersonActivity);
+        TextView genderText = findViewById(R.id.genderPersonActivity);
+        TextView firstNameDescriptionText = findViewById(R.id.firstNameDescriptionPersonActivity);
+        TextView lastNameDescriptionText = findViewById(R.id.lastNameDescriptionPersonActivity);
+        TextView genderDescriptionText = findViewById(R.id.genderDescriptionPersonActivity);
+        firstNameDescriptionText.setText("First Name");
+        lastNameDescriptionText.setText("Last Name");
+        genderDescriptionText.setText("Gender");
+
+
+        firstNameText.setText(person.getFirsName());
+        lastNameText.setText(person.getLastName());
+        if(person.getGender().compareToIgnoreCase("M")==0){
+            genderText.setText("Male");
+        }
+        else if (person.getGender().compareToIgnoreCase("F")==0) {
+            genderText.setText("Female");
+        }
+        else{
+            genderText.setText("Agender");
+        }
+
         //Creating all of the life events and family
         DataHolder dataHolder = new DataHolder(person);
         List<LifeEvent> LifeEvents = dataHolder.getLifeEvents();
-        List<FamilyPerson> familyPeople = dataHolder.getHikingTrails();
+        List<FamilyPerson> familyPeople = dataHolder.getFamilyPeople();
 
         expandableListView.setAdapter(new ExpandableListAdapter(LifeEvents, familyPeople));
     }
@@ -135,8 +161,8 @@ public class PersonActivity extends AppCompatActivity {
                     initializeLifeEventView(itemView, childPosition);
                     break;
                 case FAMILY_GROUP_POSITION:
-                    itemView = getLayoutInflater().inflate(R.layout.hiking_trail_item, parent, false);
-                    initializeHikingTrailView(itemView, childPosition);
+                    itemView = getLayoutInflater().inflate(R.layout.family_person, parent, false);
+                    initializeFamilyPersonView(itemView, childPosition);
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized group position: " + groupPosition);
@@ -145,40 +171,58 @@ public class PersonActivity extends AppCompatActivity {
             return itemView;
         }
 
-        private void initializeLifeEventView(View skiResortItemView, final int childPosition) {
-            TextView lifeEventBirthInfo = skiResortItemView.findViewById(R.id.lifeEventBirthInfo);
+        private void initializeLifeEventView(View lifeEventView, final int childPosition) {
+            TextView lifeEventBirthInfo = lifeEventView.findViewById(R.id.lifeEventBirthInfo);
             lifeEventBirthInfo.setText(LifeEvents.get(childPosition).getBirthInfo());
 
-            TextView lifeEventNameInfo = skiResortItemView.findViewById(R.id.lifeEventNameInfo);
+            TextView lifeEventNameInfo = lifeEventView.findViewById(R.id.lifeEventNameInfo);
             lifeEventNameInfo.setText(LifeEvents.get(childPosition).getPersonName());
 
-            ImageView lifeEventMarkerImage = skiResortItemView.findViewById(R.id.lifeEventImage);
+            ImageView lifeEventMarkerImage = lifeEventView.findViewById(R.id.lifeEventImage);
             lifeEventMarkerImage.setBackgroundResource(R.drawable.ic_event_marker);
 
-            skiResortItemView.setOnClickListener(new View.OnClickListener() {
+            lifeEventView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String string = "R.string.skiResortToastText" + LifeEvents.get(childPosition).getBirthInfo();
-                    Toast.makeText(PersonActivity.this,string, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(),EventActivity.class);
+                    //Make this a bundle
+                    //LifeEvents.get(childPosition)
+                    //intent.putExtra("key",map);
+                    DataCache.getInstance().eventClickedOn = LifeEvents.get(childPosition).getEvent(); //Caching the event associated with the thing
+                    startActivity(intent); //Starting it
+
+//                    String string = "R.string.skiResortToastText" + LifeEvents.get(childPosition).getBirthInfo();
+//                    Toast.makeText(PersonActivity.this,string, Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
-        private void initializeHikingTrailView(View hikingTrailItemView, final int childPosition) {
-            TextView trailNameView = hikingTrailItemView.findViewById(R.id.hikingTrailTitle);
-            trailNameView.setText(familyPeople.get(childPosition).getName());
+        private void initializeFamilyPersonView(View familyPersonView, final int childPosition) {
+            TextView personName = familyPersonView.findViewById(R.id.personNameForFamilyPerson);
+            personName.setText(familyPeople.get(childPosition).getName());
 
-            TextView trailLocationView = hikingTrailItemView.findViewById(R.id.hikingTrailLocation);
-            trailLocationView.setText(familyPeople.get(childPosition).getLocation());
+            TextView personRelationship = familyPersonView.findViewById(R.id.personRelationshipForFamilyPerson);
+            personRelationship.setText(familyPeople.get(childPosition).getRelationship());
 
-            TextView trailDifficulty = hikingTrailItemView.findViewById(R.id.hikingTrailDifficulty);
-            trailDifficulty.setText(familyPeople.get(childPosition).getDifficulty());
+            //Figuring out image
+            ImageView genderImageForPerson = familyPersonView.findViewById(R.id.imageViewForFamilyPerson);
+            if(familyPeople.get(childPosition).getGender().compareToIgnoreCase("M")==0){
+                genderImageForPerson.setBackgroundResource(R.drawable.ic_male);
+            }
+            else if(familyPeople.get(childPosition).getGender().compareToIgnoreCase("F")==0){
+                genderImageForPerson.setBackgroundResource(R.drawable.ic_female);
+            }
+            else {
+                genderImageForPerson.setBackgroundResource(R.drawable.ic_person); //Not good
+            }
 
-            hikingTrailItemView.setOnClickListener(new View.OnClickListener() {
+            familyPersonView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String string = "example" + familyPeople.get(childPosition).getName();
-                    Toast.makeText(PersonActivity.this, string, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(),PersonActivity.class);
+                    Person test = familyPeople.get(childPosition).getPerson();
+                    DataCache.getInstance().personClickedOn = familyPeople.get(childPosition).getPerson(); //Caching the event associated with the thing
+                    startActivity(intent);
                 }
             });
         }
@@ -192,36 +236,37 @@ public class PersonActivity extends AppCompatActivity {
 
 
     //Menu section
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater myMenuInflater = new MenuInflater(getApplicationContext());
-        myMenuInflater.inflate(R.menu.menu_resource_file, menu);
-
-        //Is this necessary?
-        MenuItem searchMenuItem = menu.findItem(R.id.searchMenuButton);
-        MenuItem settingsMenuItem = menu.findItem(R.id.settingsMenuButton);
-
-        searchMenuItem.setEnabled(true);
-        settingsMenuItem.setEnabled(true);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.settingsMenuButton) {
-            //Get activity is the current context
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        }
-        else if (item.getItemId() == R.id.searchMenuButton) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivity(intent);
-        }
-        else if(item.getItemId() == android.R.id.home){
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        }
-        return true;
-    }
+    //Realized I don't want a menu section
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater myMenuInflater = new MenuInflater(getApplicationContext());
+//        myMenuInflater.inflate(R.menu.menu_resource_file, menu);
+//
+//        //Is this necessary?
+//        MenuItem searchMenuItem = menu.findItem(R.id.searchMenuButton);
+//        MenuItem settingsMenuItem = menu.findItem(R.id.settingsMenuButton);
+//
+//        searchMenuItem.setEnabled(true);
+//        settingsMenuItem.setEnabled(true);
+//        return super.onCreateOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        if (item.getItemId() == R.id.settingsMenuButton) {
+//            //Get activity is the current context
+//            Intent intent = new Intent(this, SettingsActivity.class);
+//            startActivity(intent);
+//        }
+//        else if (item.getItemId() == R.id.searchMenuButton) {
+//            Intent intent = new Intent(this, SearchActivity.class);
+//            startActivity(intent);
+//        }
+//        else if(item.getItemId() == android.R.id.home){
+//            Intent intent = new Intent(this, MainActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            startActivity(intent);
+//        }
+//        return true;
+//    }
 }

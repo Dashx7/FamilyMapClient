@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <ImageView
+        android:id="@+id/imageViewForFamilyPerson"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"/>
+    <!--        app:srcCompat="@drawable/ic_person"-->
+
+
+    <LinearLayout
+        android:id="@+id/linearLayoutForFamilyPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/imageViewForFamilyPerson">
+
+        <TextView
+            android:id="@+id/personNameForFamilyPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="Person Name" />
+
+        <TextView
+            android:id="@+id/personRelationshipForFamilyPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            tools:text="Relationship" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

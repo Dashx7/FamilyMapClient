@@ -15,13 +15,9 @@ import android.widget.Toast;
 import com.example.familymapclient.ui.login.LoginFragment;
 
 //TODO
-//Figuring out everything of the recyler view
-//Which one do I use for the person
 
-
-//Unknown fragment in the mapfragment xml
-//Messing up my design tab
-
+//Map lines
+//Up button management stuff
 //Learn lambda functions one day
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener{
     @Override
@@ -29,8 +25,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState != null) {
-            //Do stuff with the old save state
-            //Not figuring that out rn
+            //Do stuff with the old save state, Not figuring that out rn
         }
 
         FragmentManager fragmentManager = this.getSupportFragmentManager();

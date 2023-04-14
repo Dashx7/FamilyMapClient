@@ -29,8 +29,12 @@ public class DataCache {
     }
     public List<Event> events; //Just straight up every event
     public Person theUserPerson;
-    public Person personClickedOn = null;
+
     public List<Person> people;
+
+    //Temporary stuff
+    public Person personClickedOn = null;
+    public Event eventClickedOn = null;
 
     public void fillPeople(List<Person> toAdd){
 
@@ -71,12 +75,12 @@ public class DataCache {
     }
     public Map<String,Person> peopleMap = new HashMap<>(); //Person ID as a string, person
     public Map<String, List<Event>> eventMap = new HashMap<>(); //EventID, Event
-    public Map<String, List<Event>> eventMapAssociatedUsername = new HashMap<>(); // Associated Username, Event
+    //public Map<String, List<Event>> eventMapAssociatedUsername = new HashMap<>(); // Associated Username, Event
     public Map<String, List<Event>> eventMapPersonID = new HashMap<>(); // PersonID, Event
-    public Map<Integer, List<Event>> personEvents = new HashMap<>();
+    //public Map<Integer, List<Event>> personEvents = new HashMap<>();
 
-    public Set<Integer> paternalAncestors = new HashSet<>();
-    public Set<Integer> maternalAncestors = new HashSet<>();
+    //public Set<Integer> paternalAncestors = new HashSet<>();
+    //public Set<Integer> maternalAncestors = new HashSet<>();
 
     public RegisterResult registerResult;
     public LoginResult loginResult;

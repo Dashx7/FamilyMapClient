@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 
 import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.cache.Settings;
-import com.example.familymapclient.model.DataHolder;
 import com.example.familymapclient.serverProxy.ServerProxy;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,22 +32,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import Model.Event;
 import Model.Person;
 import Request.EventRequest;
 
-//Stuff to figure out
-//How do I put a little search bar at the top right corner
-//Which ones do they go into to
-//Write the XML to make it search
-//Then write the recycler view for it once you finish
-//Adapter and stuff
-
-//Write the other server proxy classes?
 public class MapsFragment extends Fragment {
 
     //Colors to use
@@ -59,7 +45,9 @@ public class MapsFragment extends Fragment {
 
     ImageView imageView = null;
     TextView eventText = null;
-    Layout eventLayout = null;
+    Event clickedEvent = DataCache.getInstance().eventClickedOn;
+
+    //Layout eventLayout = null;
 
     //Menu section
     @Override
@@ -114,7 +102,7 @@ public class MapsFragment extends Fragment {
     }
 
     //Adding a marker
-    public void addMarker(GoogleMap googleMap, Event event) {
+    public Marker addMarker(GoogleMap googleMap, Event event) {
         //IF YOU SEE YELLOW I HAVE FUCKED UP
         float myColor = BitmapDescriptorFactory.HUE_YELLOW;
         if (event.getEventType().compareTo("birth") == 0) {
@@ -128,7 +116,7 @@ public class MapsFragment extends Fragment {
                 .position(new LatLng(event.getLatitude(), event.getLongitude()))
                 .icon(BitmapDescriptorFactory.defaultMarker(myColor)));
         marker.setTag(event);//Markers will have tags with their events
-
+        return marker;
     }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -151,11 +139,53 @@ public class MapsFragment extends Fragment {
                     //Means its got the events cached
                     super.handleMessage(msg);
 
-                    //TODO
                     //Marking all events
                     for (Event event : DataCache.getInstance().events) {
-                        addMarker(googleMap, event);
+                        if(clickedEvent!=null &&
+                                event.getEventID().compareToIgnoreCase(clickedEvent.getEventID())==0){
+                            ClickMarker(addMarker(googleMap, event));
+                            clickedEvent = null;
+                            DataCache.getInstance().eventClickedOn = null;
+                        }
+                        else{
+                            addMarker(googleMap, event);
+                        }
                     }
+
+                    GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(@NonNull Marker marker) {
+                            return ClickMarker(marker);
+                        }
+                    };
+                    googleMap.setOnMarkerClickListener(onMarkerClickListener);
+                }
+
+                private boolean ClickMarker(@NonNull Marker marker) {
+                    LatLng position = marker.getPosition();
+                    float zoom = (float) 4;
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom));
+                    //Create a event activity and send it the mapFragment
+                    Event markerEvent = (Event) marker.getTag();
+                    //Map<String, List<Person>> peopleMap =  DataCache.getInstance().peopleMap;
+                    Person person = DataCache.getInstance().peopleMap.get(markerEvent.getPersonID()); //List of 1
+
+                    DataCache.getInstance().personClickedOn = person;
+
+                    //Doing all the event display logic
+                    String name = person.getFirsName() + " " + person.getLastName();
+                    String birth = "Birth: " + markerEvent.getCity() + ", " + markerEvent.getCountry()
+                            + "(" + markerEvent.getYear() + ")";
+                    String eventDescription = name + "\n" + birth;
+                    eventText.setText(eventDescription);
+                    if (person.getGender().compareToIgnoreCase("M") == 0) {
+                        imageView.setBackgroundResource(R.drawable.ic_male);
+                    } else if (person.getGender().compareToIgnoreCase("F") == 0) {
+                        imageView.setBackgroundResource(R.drawable.ic_female);
+                    } else
+                        imageView.setBackgroundResource(R.drawable.ic_person); //Not so good
+
+                    //TODO
                     //Drawing the lines
                     if (Settings.isLifeStoryLines) {
 
@@ -182,33 +212,7 @@ public class MapsFragment extends Fragment {
 
                     }
 
-
-                    GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(@NonNull Marker marker) {
-                            //Create a event activity and send it the mapFragment
-                            Event markerEvent = (Event) marker.getTag();
-                            //Map<String, List<Person>> peopleMap =  DataCache.getInstance().peopleMap;
-                            Person person = DataCache.getInstance().peopleMap.get(markerEvent.getPersonID()); //List of 1
-
-                            DataCache.getInstance().personClickedOn = person;
-
-                            String name = person.getFirsName() + " " + person.getLastName();
-                            String birth = "Birth: " + markerEvent.getCity() + ", " + markerEvent.getCountry()
-                                    + "(" + markerEvent.getYear() + ")";
-                            String eventDescription = name + "\n" + birth;
-                            eventText.setText(eventDescription);
-                            if (person.getGender().compareToIgnoreCase("M") == 0) {
-                                imageView.setBackgroundResource(R.drawable.ic_male);
-                            } else if (person.getGender().compareToIgnoreCase("F") == 0) {
-                                imageView.setBackgroundResource(R.drawable.ic_female);
-                            } else
-                                imageView.setBackgroundResource(R.drawable.ic_person); //Not so good
-
-                            return true;
-                        }
-                    };
-                    googleMap.setOnMarkerClickListener(onMarkerClickListener);
+                    return true;
                 }
             };
 
@@ -265,8 +269,6 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-
-
     }
 
 }

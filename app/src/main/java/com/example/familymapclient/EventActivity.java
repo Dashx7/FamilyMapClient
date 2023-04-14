@@ -2,6 +2,8 @@ package com.example.familymapclient;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,12 +11,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+
 public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
+
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        Fragment fragment = new MapsFragment();
+
+        //Embed the fragment
+        fragmentManager.beginTransaction().add(R.id.fragmentFrameLayoutEventActivity,fragment).commit();
         //setHasOptionsMenu(true);
     }
     @Override
