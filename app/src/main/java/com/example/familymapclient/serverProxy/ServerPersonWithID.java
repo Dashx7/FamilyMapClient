@@ -34,6 +34,12 @@ public class ServerPersonWithID implements Runnable{
         this.theHandler = theHandler;
         this.personID = personID;
     }
+    public ServerPersonWithID(String theAuthtoken, String personID, String serverHost, String serverPort) {
+        this.authToken = theAuthtoken;
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
+        this.personID = personID;
+    }
 
 
     @Override
@@ -74,12 +80,14 @@ public class ServerPersonWithID implements Runnable{
                 DataCache.getInstance().theUserPerson = personResult.setSingularPerson();
                 DataCache.getInstance().authToken = authToken;
                 System.out.println("Data Cached for Single Person");
-                Bundle myBundle = new Bundle();
-                myBundle.putBoolean("SuccessMessagePersonWithID", true);
-                Message message = Message.obtain();
-                message.setData(myBundle);
+                if(theHandler!=null){
+                    Bundle myBundle = new Bundle();
+                    myBundle.putBoolean("SuccessMessagePersonWithID", true);
+                    Message message = Message.obtain();
+                    message.setData(myBundle);
 
-                theHandler.sendMessage(message);
+                    theHandler.sendMessage(message);
+                }
 
             } else {
                 // The HTTP response status code indicates an error
@@ -94,12 +102,14 @@ public class ServerPersonWithID implements Runnable{
 
                 // Display the data returned from the server
                 System.out.println(respData);
-                Bundle myBundle = new Bundle();
-                myBundle.putBoolean("SuccessMessagePersonWithID", false);
-                Message message = Message.obtain();
-                message.setData(myBundle);
+                if(theHandler!=null) {
+                    Bundle myBundle = new Bundle();
+                    myBundle.putBoolean("SuccessMessagePersonWithID", false);
+                    Message message = Message.obtain();
+                    message.setData(myBundle);
 
-                theHandler.sendMessage(message);
+                    theHandler.sendMessage(message);
+                }
             }
         } catch (IOException e) {
             // An exception was thrown, so display the exception's stack trace

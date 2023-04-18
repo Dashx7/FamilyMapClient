@@ -1,16 +1,14 @@
 package com.example.familymapclient.cache;
 
-import android.widget.Switch;
-
 public class Settings {
 
 
     //The different settings possible
-    public static boolean isSpouseLines = false;
-    public static boolean isFamilyTreeLines = false;
-    public static boolean isLifeStoryLines = false;
-    public static boolean isFilterOutMale = false;
-    public static boolean isFilterOutFemale = false;
-    public static boolean isFilterByMomsSide = false;
-    public static boolean isFilterByDadsSide = false;
+    public static boolean isSpouseLines = true;
+    public static boolean isFamilyTreeLines = true;
+    public static boolean isLifeStoryLines = true;
+    public static boolean isFilterMale = true;
+    public static boolean isFilterFemale = true;
+    public static boolean isFilterByMomsSide = true;
+    public static boolean isFilterByDadsSide = true;
 }

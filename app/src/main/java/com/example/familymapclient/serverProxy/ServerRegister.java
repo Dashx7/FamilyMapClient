@@ -29,6 +29,11 @@ public class ServerRegister implements Runnable {
         this.serverPort = serverPort;
         this.theHandler = theHandler;
     }
+    public ServerRegister(RegisterRequest theRequest, String serverHost, String serverPort) {
+        this.theRequest = theRequest;
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
+    }
 
     @Override
     public void run() {
@@ -77,18 +82,18 @@ public class ServerRegister implements Runnable {
                 // Display the JSON data returned from the server
                 System.out.println(respData);
 
-                //TODO Cache the answers
                 DataCache.getInstance().registerResult = registerResult;
                 DataCache.getInstance().authToken = registerResult.getAuthtoken();
                 System.out.println("Data Cached for register");
 
-                Bundle myBundle = new Bundle();
-                myBundle.putBoolean("SuccessMessage", true);
-                Message message = Message.obtain();
-                message.setData(myBundle);
+                if(theHandler!=null){ //For Testing
+                    Bundle myBundle = new Bundle();
+                    myBundle.putBoolean("SuccessMessage", true);
+                    Message message = Message.obtain();
+                    message.setData(myBundle);
 
-                theHandler.sendMessage(message);
-
+                    theHandler.sendMessage(message);
+                }
 
             } else {
                 // The HTTP response status code indicates an error
@@ -104,12 +109,14 @@ public class ServerRegister implements Runnable {
                 // Display the data returned from the server, we failed tho
                 System.out.println(respData);
 
-                Bundle myBundle = new Bundle();
-                myBundle.putBoolean("SuccessMessage", false);
-                Message message = Message.obtain();
-                message.setData(myBundle);
+                if(theHandler!=null) { //For Testing
+                    Bundle myBundle = new Bundle();
+                    myBundle.putBoolean("SuccessMessage", false);
+                    Message message = Message.obtain();
+                    message.setData(myBundle);
 
-                theHandler.sendMessage(message);
+                    theHandler.sendMessage(message);
+                }
             }
         } catch (IOException e) {
             // An exception was thrown, so display the exception's stack trace

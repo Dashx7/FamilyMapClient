@@ -1,6 +1,7 @@
 package com.example.familymapclient;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +35,12 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        //Back button
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         SearchView searchView = findViewById(R.id.searchView);
 
@@ -108,7 +115,7 @@ public class SearchActivity extends AppCompatActivity {
     private class UtahOutdoorsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView familyPersonName;
         private final TextView familyPersonRelationship;
-        //private final TextView difficulty;
+        private final ImageView familyPersonImage;
 
         private final int viewType;
         private LifeEvent lifeEvent;
@@ -123,23 +130,12 @@ public class SearchActivity extends AppCompatActivity {
             if (viewType == LIFE_EVENT_ITEM_VIEW_TYPE) {
                 familyPersonName = itemView.findViewById(R.id.lifeEventNameInfo);
                 familyPersonRelationship = itemView.findViewById(R.id.lifeEventBirthInfo);
+                familyPersonImage = itemView.findViewById(R.id.lifeEventImage);
                 //difficulty = null;
-            } else {
+            } else { //Family person
+                familyPersonImage = itemView.findViewById(R.id.imageViewForFamilyPerson);
                 familyPersonName = itemView.findViewById(R.id.personNameForFamilyPerson);
                 familyPersonRelationship = itemView.findViewById(R.id.personRelationshipForFamilyPerson);
-
-                //Figuring out image
-//                ImageView genderImageForPerson = view.findViewById(R.id.imageViewForFamilyPerson);
-//                if(familyPeople.get(childPosition).getGender().compareToIgnoreCase("M")==0){
-//                    genderImageForPerson.setBackgroundResource(R.drawable.ic_male);
-//                }
-//                else if(familyPeople.get(childPosition).getGender().compareToIgnoreCase("F")==0){
-//                    genderImageForPerson.setBackgroundResource(R.drawable.ic_female);
-//                }
-//                else {
-//                    genderImageForPerson.setBackgroundResource(R.drawable.ic_person); //Not good
-//                }
-
 
             }
         }
@@ -148,12 +144,22 @@ public class SearchActivity extends AppCompatActivity {
             this.lifeEvent = lifeEvent;
             this.familyPersonName.setText(lifeEvent.getPersonName());
             this.familyPersonRelationship.setText(lifeEvent.getBirthInfo());
+            this.familyPersonImage.setBackgroundResource(R.drawable.ic_event_marker);
         }
 
         private void bind(FamilyPerson familyPerson) {
             this.familyPerson = familyPerson;
             this.familyPersonName.setText(familyPerson.getName());
             this.familyPersonRelationship.setText(familyPerson.getGender());
+            if(familyPerson.getGender().compareToIgnoreCase("M")==0){
+                familyPersonImage.setBackgroundResource(R.drawable.ic_male);
+            }
+            else if(familyPerson.getGender().compareToIgnoreCase("F")==0){
+                familyPersonImage.setBackgroundResource(R.drawable.ic_female);
+            }
+            else {
+                familyPersonImage.setBackgroundResource(R.drawable.ic_person); //Not good
+            }
         }
 
         @Override
@@ -182,24 +188,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater myMenuInflater = new MenuInflater(getApplicationContext());
-        myMenuInflater.inflate(R.menu.menu_resource_file, menu);
-
-        //Is this necessary?
-        MenuItem settingsMenuItem = menu.findItem(R.id.settingsMenuButton);
-        settingsMenuItem.setEnabled(true);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.settingsMenuButton) {
-            //Get activity is the current context
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        } else if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

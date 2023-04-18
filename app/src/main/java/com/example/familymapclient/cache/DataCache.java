@@ -1,11 +1,13 @@
 package com.example.familymapclient.cache;
 
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 import Model.Event;
 import Model.Person;
@@ -22,9 +24,11 @@ public class DataCache {
     public static DataCache getInstance() {
         return instance;
     }
+    public static void resetCacheForTesting() {
+        instance = new DataCache();
+    }
 
-
-    private DataCache(){
+    public DataCache(){
 
     }
     public List<Event> events; //Just straight up every event
@@ -32,13 +36,11 @@ public class DataCache {
 
     public List<Person> people;
 
-    //Temporary stuff
+    //Current thing clicked on
     public Person personClickedOn = null;
     public Event eventClickedOn = null;
 
     public void fillPeople(List<Person> toAdd){
-
-        Map<String,Person> tempDebug = peopleMap;
         for(Person daPerson: toAdd){
             String key = daPerson.getPersonID();
             if(peopleMap.get(key)==null){
@@ -50,6 +52,8 @@ public class DataCache {
         }
     }
     public void fillEvents(List<Event> toAdd){
+        eventMap.clear();
+        eventMapPersonID.clear();
         for(Event daEvent: toAdd){
             String key = daEvent.getEventID();
             String key2 = daEvent.getPersonID();
@@ -76,14 +80,17 @@ public class DataCache {
     public Map<String,Person> peopleMap = new HashMap<>(); //Person ID as a string, person
     public Map<String, List<Event>> eventMap = new HashMap<>(); //EventID, Event
     //public Map<String, List<Event>> eventMapAssociatedUsername = new HashMap<>(); // Associated Username, Event
-    public Map<String, List<Event>> eventMapPersonID = new HashMap<>(); // PersonID, Event
-    //public Map<Integer, List<Event>> personEvents = new HashMap<>();
-
-    //public Set<Integer> paternalAncestors = new HashSet<>();
-    //public Set<Integer> maternalAncestors = new HashSet<>();
+    public Map<String, List<Event>> eventMapPersonID = new HashMap<>(); // PersonID, Event list
 
     public RegisterResult registerResult;
     public LoginResult loginResult;
 
+    public List<Polyline> currentLines = new ArrayList<>();
+    public List<Marker> currentMarker = new ArrayList<>();
+
+    public List<String> mothersSideID = new ArrayList<>();
+    public List<String> fathersSideID = new ArrayList<>();
+    public List<String> basePeopleID = new ArrayList<>(); //user, spouse, and their kids
+    public boolean calledFromEventActivity = false; //To see if I need to inflate the menu
 
 }

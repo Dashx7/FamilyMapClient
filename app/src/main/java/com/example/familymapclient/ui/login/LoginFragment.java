@@ -28,11 +28,7 @@ import android.widget.Toast;
 
 import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.databinding.FragmentLoginBinding;
-
-import com.example.familymapclient.R;
 import com.example.familymapclient.serverProxy.ServerProxy;
-
-import java.util.concurrent.ExecutorService;
 
 import Request.LoginRequest;
 import Request.RegisterRequest;
@@ -41,6 +37,8 @@ public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
+
+    public int DEFAULT_USER_DEBUGGING = 1;
 
 
     private Listener listener;
@@ -84,10 +82,19 @@ public class LoginFragment extends Fragment {
         final EditText lastNameEditText = binding.LastName;
         final EditText emailEditText = binding.email;
 
-        usernameEditText.setText("username");
-        passwordEditText.setText("password");
-        hostEditText.setText("10.0.2.2");
-        portEditText.setText("8080");
+        if(DEFAULT_USER_DEBUGGING ==0){
+            usernameEditText.setText("username");
+            passwordEditText.setText("password");
+            hostEditText.setText("10.0.2.2");
+            portEditText.setText("8080");
+        }
+        else if(DEFAULT_USER_DEBUGGING ==1){
+            usernameEditText.setText("sheila");
+            passwordEditText.setText("parker");
+            hostEditText.setText("10.0.2.2");
+            portEditText.setText("8080");
+        }
+
 
         final RadioGroup genderRadioGroup = binding.radioGroup2;
         final RadioButton radioButton1 = binding.radioButton;
@@ -149,7 +156,6 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -214,8 +220,7 @@ public class LoginFragment extends Fragment {
         lastNameEditText.addTextChangedListener(afterTextChangedListener);
         emailEditText.addTextChangedListener(afterTextChangedListener);
 
-
-
+        //Password thing
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -230,12 +235,9 @@ public class LoginFragment extends Fragment {
 
 
         //Sign in and Register buttons
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
-
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
@@ -273,7 +275,6 @@ public class LoginFragment extends Fragment {
                                             listener.notifyDone();
                                         }
                                     };
-
                                     serverProxy.cachePeople(DataCache.getInstance().loginResult.getAuthtoken(), handler3);
 
                                 }
@@ -282,8 +283,8 @@ public class LoginFragment extends Fragment {
                                     DataCache.getInstance().loginResult.getPersonID());
 
                         }
-                        else if(msg.getData().getBoolean("SuccessMessage")==false){
-                            Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
+                        else if(!msg.getData().getBoolean("SuccessMessage")){
+                            Toast.makeText(getContext(), "Error, Login not successful", Toast.LENGTH_SHORT).show();
                         }
                     }
                 };
@@ -337,7 +338,14 @@ public class LoginFragment extends Fragment {
                                         DataCache.getInstance().serverHost = hostEditText.getText().toString();
                                         DataCache.getInstance().serverPort = portEditText.getText().toString();
 
-                                        listener.notifyDone();
+                                        Handler handler3 = new Handler(Looper.getMainLooper()){
+                                            @Override
+                                            public void handleMessage(@NonNull Message msg) {
+                                                listener.notifyDone();
+                                            }
+                                        };
+
+                                        serverProxy.cachePeople(DataCache.getInstance().registerResult.getAuthtoken(), handler3);
                                     }
                                     else {
                                         Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
@@ -347,7 +355,6 @@ public class LoginFragment extends Fragment {
                             };
                             serverProxy.cacheUserPeopleWithID(DataCache.getInstance().registerResult.getAuthtoken(), handler2,
                                     DataCache.getInstance().registerResult.getPersonID());
-                            serverProxy.cachePeople(DataCache.getInstance().registerResult.getAuthtoken(), handler2);
                         }
                         else{
                             Toast.makeText(getContext(), "Error, Register not successful", Toast.LENGTH_SHORT).show();
@@ -355,8 +362,6 @@ public class LoginFragment extends Fragment {
 
                     }
                 };
-
-                
                 serverProxy.register(registerRequest,handler); //register it
 
             }

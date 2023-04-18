@@ -36,11 +36,19 @@ public class ServerProxy {
         executor.execute(serverRegister);
 
     }
+    public void register(RegisterRequest registerRequest){
+        ServerRegister serverRegister = new ServerRegister(registerRequest,serverHost,serverPort);
+        serverRegister.run();
+    }
     public void login(LoginRequest theRequest, Handler theHandler){
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         ServerLogin serverLogin = new ServerLogin(theRequest, serverHost, serverPort, theHandler);
         executor.execute(serverLogin);
+    }
+    public void login(LoginRequest theRequest){
+        ServerLogin serverLogin = new ServerLogin(theRequest, serverHost, serverPort);
+        serverLogin.run();
     }
 
     public void cacheEvents(EventRequest eventRequest, Handler theHandler, String authToken) {
@@ -66,6 +74,10 @@ public class ServerProxy {
 
         ServerPersonWithID serverPersonWithID = new ServerPersonWithID(authtoken, ID, serverHost, serverPort, theHandler);
         executor.execute(serverPersonWithID);
+    }
+    public void cacheUserPeopleWithID(String authtoken, String ID) {
+        ServerPersonWithID serverPersonWithID = new ServerPersonWithID(authtoken, ID, serverHost, serverPort);
+        serverPersonWithID.run();
     }
 
 

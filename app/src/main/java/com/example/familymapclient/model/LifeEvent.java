@@ -4,10 +4,12 @@ import Model.Event;
 import Model.Person;
 
 public class LifeEvent {
+    //Variables
     private final String birthInfo;
     private final String personName;
     private final Event event;
 
+    //Constructor
     public LifeEvent(Person person, Event daEvent) {
         String upperCaseEvent = daEvent.getEventType().substring(0,1).toUpperCase() + daEvent.getEventType().substring(1);
         this.birthInfo = upperCaseEvent + ": " + daEvent.getCity() + ", " + daEvent.getCountry() + "("

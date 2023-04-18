@@ -2,16 +2,17 @@ package com.example.familymapclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceFragmentCompat;
 
-import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.cache.Settings;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -19,14 +20,10 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Don't ask me about this
         setContentView(R.layout.settings_activity);
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.settings, new SettingsFragment())
-//                    .commit();
-//        }
+
+
+        //Back button
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -41,14 +38,25 @@ public class SettingsActivity extends AppCompatActivity {
         Switch switchFemaleEvents = findViewById(R.id.switchFemaleEvents);
         Switch switchMaleEvents = findViewById(R.id.switchMaleEvents);
 
+        LinearLayout logout = findViewById(R.id.logOutLayoutInSettings);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { //Logout button
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+
         //Set the switches to equal current settings
         switchFamilyTreeLines.setChecked(Settings.isFamilyTreeLines);
         switchLifeStoryLines.setChecked(Settings.isLifeStoryLines);
         switchSpouseLines.setChecked(Settings.isSpouseLines);
         switchFathersSide.setChecked(Settings.isFilterByDadsSide);
         switchMothersSide.setChecked(Settings.isFilterByMomsSide);
-        switchFemaleEvents.setChecked(Settings.isFilterOutFemale);
-        switchMaleEvents.setChecked(Settings.isFilterOutMale);
+        switchFemaleEvents.setChecked(Settings.isFilterFemale);
+        switchMaleEvents.setChecked(Settings.isFilterMale);
 
         //My listener that just puts all the settings in place
         CompoundButton.OnCheckedChangeListener myListener = new CompoundButton.OnCheckedChangeListener() {
@@ -59,8 +67,13 @@ public class SettingsActivity extends AppCompatActivity {
                 Settings.isLifeStoryLines = switchLifeStoryLines.isChecked();
                 Settings.isFilterByDadsSide = switchFathersSide.isChecked();
                 Settings.isFilterByMomsSide = switchMothersSide.isChecked();
-                Settings.isFilterOutMale = switchMaleEvents.isChecked();
-                Settings.isFilterOutFemale = switchFemaleEvents.isChecked();
+                Settings.isFilterMale = switchMaleEvents.isChecked();
+                Settings.isFilterFemale = switchFemaleEvents.isChecked();
+
+                if(!Settings.isFilterMale || !Settings.isFilterFemale){ //If you don't show one gender they you can never see a spouse
+                    switchSpouseLines.setChecked(false);
+                    Settings.isSpouseLines = false;
+                }
             }
         };
 

@@ -4,20 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.familymapclient.ui.login.LoginFragment;
 
 //TODO
+//Logout doesn't allow login again?
 
-//Map lines
-//Up button management stuff
+//Male female filter needs to reflect in search events
+
+//Menu on event and search and settings DONE :)
+
 //Learn lambda functions one day
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener{
     @Override
@@ -77,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
 
         //Swap the screen with the map fragment previously made
         fragmentManager.beginTransaction().replace(R.id.fragmentFrameLayout,fragment).commit();
+
         //setContentView();
     }
     @Override

@@ -3,6 +3,7 @@ package com.example.familymapclient.model;
 import Model.Person;
 
 public class FamilyPerson {
+    //Stored variables
     private final String name;
     private final String relationship;
     private final String gender;
@@ -22,27 +23,32 @@ public class FamilyPerson {
     }
     public FamilyPerson(Person daPerson, Person personToCompareTo) {
         //daPerson is the person and personToCompareTo is there for relationship advice
-        if(daPerson.getSpouseID().compareToIgnoreCase(personToCompareTo.getPersonID())==0){ //Is it the persons spouse?
+        if(daPerson.getSpouseID()!=null && personToCompareTo.getPersonID()!=null &&
+                daPerson.getSpouseID().compareToIgnoreCase(personToCompareTo.getPersonID())==0){ //Is it the persons spouse?
             relationship = "Spouse";
         }
-        else if(daPerson.getFatherID().compareToIgnoreCase(personToCompareTo.getPersonID())==0){// Is it the persons child? (Male)
+        else if(daPerson.getFatherID()!=null && personToCompareTo.getPersonID()!=null &&
+                daPerson.getFatherID().compareToIgnoreCase(personToCompareTo.getPersonID())==0){// Is it the persons child? (Male)
             relationship = "Child";
         }
-        else if(daPerson.getMotherID().compareToIgnoreCase(personToCompareTo.getPersonID())==0){// Is it the persons child? (female)
+        else if(daPerson.getMotherID()!=null && personToCompareTo.getPersonID()!=null &&
+                daPerson.getMotherID().compareToIgnoreCase(personToCompareTo.getPersonID())==0){// Is it the persons child? (female)
             relationship = "Child";
         }
-        else if(daPerson.getPersonID().compareToIgnoreCase(personToCompareTo.getFatherID())==0){ //Is it the persons father
+        else if(daPerson.getPersonID()!=null && personToCompareTo.getFatherID()!=null &&
+                daPerson.getPersonID().compareToIgnoreCase(personToCompareTo.getFatherID())==0){ //Is it the persons father
             relationship = "Father";
         }
-        else if(daPerson.getPersonID().compareToIgnoreCase(personToCompareTo.getMotherID())==0){ //Is it the persons Mother
+        else if(daPerson.getPersonID()!=null && personToCompareTo.getMotherID()!=null &&
+                daPerson.getPersonID().compareToIgnoreCase(personToCompareTo.getMotherID())==0){ //Is it the persons Mother
             relationship = "Mother";
         }
         else {
             relationship = null;
         }
-        this.name = personToCompareTo.getFirsName() + " " + personToCompareTo.getLastName();
-        this.gender = personToCompareTo.getGender();
-        this.person = personToCompareTo;
+        this.name = daPerson.getFirsName() + " " + daPerson.getLastName();
+        this.gender = daPerson.getGender();
+        this.person = daPerson;
     }
 
     public String getName() {
