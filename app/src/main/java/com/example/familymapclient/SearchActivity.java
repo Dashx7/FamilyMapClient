@@ -8,15 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.model.DataGenerator;
@@ -24,8 +21,6 @@ import com.example.familymapclient.model.FamilyPerson;
 import com.example.familymapclient.model.LifeEvent;
 
 import java.util.List;
-
-import Model.Person;
 
 public class SearchActivity extends AppCompatActivity {
     private static final int LIFE_EVENT_ITEM_VIEW_TYPE = 0;
@@ -169,20 +164,12 @@ public class SearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(),EventActivity.class);
                 DataCache.getInstance().eventClickedOn = this.lifeEvent.getEvent(); //Caching the event associated with the thing
                 startActivity(intent); //Starting it
-
-                Toast.makeText(SearchActivity.this, String.format("Enjoy skiing %s!",
-                        lifeEvent.getPersonName()), Toast.LENGTH_SHORT).show();
             }
             else {
                 // This is were we could pass the hikingTrail to a hiking trail detail activity
-
                 Intent intent = new Intent(getApplicationContext(), PersonActivity.class);
-                Person test = this.familyPerson.getPerson();
                 DataCache.getInstance().personClickedOn = this.familyPerson.getPerson(); //Caching the event associated with the thing
                 startActivity(intent);
-
-                Toast.makeText(SearchActivity.this, String.format("Enjoy hiking %s. It's %s.",
-                        familyPerson.getName(), familyPerson.getName().toLowerCase()), Toast.LENGTH_SHORT).show();
             }
         }
     }

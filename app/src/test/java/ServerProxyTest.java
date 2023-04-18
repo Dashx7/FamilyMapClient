@@ -34,7 +34,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.register(registerRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance(); //dataCaches are there for debug
         assert DataCache.getInstance().authToken!=null;
         RegisterResult result = DataCache.getInstance().registerResult;
         assert result.isSuccess();
@@ -51,7 +51,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.register(registerRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken==null;
         RegisterResult result = DataCache.getInstance().registerResult;
         assert result==null;
@@ -68,7 +68,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator, so this should fail
 
         proxy.register(registerRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken==null;
         RegisterResult result = DataCache.getInstance().registerResult;
         assert result==null;
@@ -83,7 +83,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.login(loginRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken!=null;
         LoginResult result = DataCache.getInstance().loginResult;
         assert result.isSuccess();
@@ -98,7 +98,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.login(loginRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken!=null;
         LoginResult result = DataCache.getInstance().loginResult;
         assert result.isSuccess();
@@ -113,7 +113,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.login(loginRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken==null;
         LoginResult result = DataCache.getInstance().loginResult;
         assert result==null;
@@ -132,7 +132,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.register(registerRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken!=null;
         RegisterResult result = DataCache.getInstance().registerResult;
         assert result.isSuccess();
@@ -163,13 +163,13 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.register(registerRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken!=null;
         RegisterResult result = DataCache.getInstance().registerResult;
         assert result.isSuccess();
 
 
-        RegisterResult registerResultBad= result;
+        RegisterResult registerResultBad = result;
         registerResultBad.setAuthtoken("No AuthToken To See Here"); //Breaks it
 
         //Grabbing new data
@@ -178,7 +178,6 @@ public class ServerProxyTest {
         Person user = DataCache.getInstance().theUserPerson;
         assert user==null;
     }
-
     @Test
     public void createDataLogin(){
         //Previous login
@@ -190,7 +189,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.login(loginRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken!=null;
         LoginResult result = DataCache.getInstance().loginResult;
         assert result.isSuccess();
@@ -220,7 +219,7 @@ public class ServerProxyTest {
         ServerProxy proxy = new ServerProxy("localhost", "8080"); //LOCALHOST for java testing and 10.0.2.2 for emulator
 
         proxy.login(loginRequest);
-        DataCache dataCache = DataCache.getInstance();
+        //DataCache dataCache = DataCache.getInstance();
         assert DataCache.getInstance().authToken!=null;
         LoginResult result = DataCache.getInstance().loginResult;
         assert result.isSuccess();

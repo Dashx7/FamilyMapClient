@@ -9,8 +9,16 @@
     <string name="prompt_password">Password</string>
     <string name="prompt_userName">User Name</string>
     <string name="prompt_Gender">Gender (m/f)</string>
-    <string name="male"> Male</string>
-    <string name="female"> Female</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+
+    <string name="first_name"> First Name</string>
+    <string name="last_name"> Last Name</string>
+    <string name="gender"> gender</string>
+
+
+    <string name="life_events">Life Events</string>
+    <string name="family">Family</string>
 
     <string name="action_sign_in">Sign in</string>
     <string name="action_register">Register</string>

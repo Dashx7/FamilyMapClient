@@ -4,10 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,24 +14,21 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.familymapclient.cache.DataCache;
 import com.example.familymapclient.model.DataHolder;
 import com.example.familymapclient.model.FamilyPerson;
 import com.example.familymapclient.model.LifeEvent;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import Model.Event;
 import Model.Person;
 
 public class PersonActivity extends AppCompatActivity {
 
     Person person = DataCache.getInstance().personClickedOn;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -54,18 +50,18 @@ public class PersonActivity extends AppCompatActivity {
         TextView firstNameDescriptionText = findViewById(R.id.firstNameDescriptionPersonActivity);
         TextView lastNameDescriptionText = findViewById(R.id.lastNameDescriptionPersonActivity);
         TextView genderDescriptionText = findViewById(R.id.genderDescriptionPersonActivity);
-        firstNameDescriptionText.setText("First Name");
-        lastNameDescriptionText.setText("Last Name");
-        genderDescriptionText.setText("Gender");
+        firstNameDescriptionText.setText(R.string.first_name);
+        lastNameDescriptionText.setText(R.string.last_name);
+        genderDescriptionText.setText(R.string.gender);
 
 
         firstNameText.setText(person.getFirsName());
         lastNameText.setText(person.getLastName());
         if(person.getGender().compareToIgnoreCase("M")==0){
-            genderText.setText("Male");
+            genderText.setText(R.string.male);
         }
         else if (person.getGender().compareToIgnoreCase("F")==0) {
-            genderText.setText("Female");
+            genderText.setText(R.string.female);
         }
         else{
             genderText.setText("Agender");
@@ -146,10 +142,10 @@ public class PersonActivity extends AppCompatActivity {
 
             switch (groupPosition) {
                 case LIFE_EVENT_GROUP_POSITION:
-                    titleView.setText("Life Events");
+                    titleView.setText(R.string.life_events);
                     break;
                 case FAMILY_GROUP_POSITION:
-                    titleView.setText("Family");
+                    titleView.setText(R.string.family);
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized group position: " + groupPosition);
@@ -192,14 +188,8 @@ public class PersonActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(),EventActivity.class);
-                    //Make this a bundle
-                    //LifeEvents.get(childPosition)
-                    //intent.putExtra("key",map);
                     DataCache.getInstance().eventClickedOn = LifeEvents.get(childPosition).getEvent(); //Caching the event associated with the thing
                     startActivity(intent); //Starting it
-
-//                    String string = "R.string.skiResortToastText" + LifeEvents.get(childPosition).getBirthInfo();
-//                    Toast.makeText(PersonActivity.this,string, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -227,7 +217,6 @@ public class PersonActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(),PersonActivity.class);
-                    Person test = familyPeople.get(childPosition).getPerson();
                     DataCache.getInstance().personClickedOn = familyPeople.get(childPosition).getPerson(); //Caching the event associated with the thing
                     startActivity(intent);
                 }

@@ -17,7 +17,7 @@ import java.net.URL;
 import Result.EventResult;
 import Result.PersonResult;
 
-public class ServerPerson implements Runnable{
+public class ServerPerson implements Runnable {
 
     String serverHost;
     String serverPort;
@@ -31,6 +31,7 @@ public class ServerPerson implements Runnable{
         this.serverPort = serverPort;
         this.theHandler = theHandler;
     }
+
     public ServerPerson(String theAuthtoken, String serverHost, String serverPort) {
         this.authToken = theAuthtoken;
         this.serverHost = serverHost;
@@ -79,6 +80,9 @@ public class ServerPerson implements Runnable{
                 DataCache.getInstance().authToken = authToken;
                 System.out.println("Data Cached for Person");
 
+                //No bundle here
+
+
             } else {
                 // The HTTP response status code indicates an error
                 // occurred, so print out the message from the HTTP response
@@ -98,11 +102,13 @@ public class ServerPerson implements Runnable{
             e.printStackTrace();
         }
 
-        Bundle myBundle = new Bundle();
-        myBundle.putBoolean("SuccessMessagePerson", true);
-        Message message = Message.obtain();
-        message.setData(myBundle);
+        if (theHandler != null) {
+            Bundle myBundle = new Bundle();
+            myBundle.putBoolean("SuccessMessagePerson", true);
+            Message message = Message.obtain();
+            message.setData(myBundle);
 
-        theHandler.sendMessage(message);
+            theHandler.sendMessage(message);
+        }
     }
 }

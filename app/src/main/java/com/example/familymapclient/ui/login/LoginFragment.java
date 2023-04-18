@@ -45,11 +45,6 @@ public class LoginFragment extends Fragment {
 
     public interface Listener {
         void notifyDone();
-        void notifyLoginIsDone(String message);
-        void notifyLoginFailed(String message);
-        void notifyRegisterIsDone(String message);
-        void notifyRegisterFailed(String message);
-
     }
 
     public void registerListener(Listener listener) {
@@ -82,6 +77,7 @@ public class LoginFragment extends Fragment {
         final EditText lastNameEditText = binding.LastName;
         final EditText emailEditText = binding.email;
 
+        //So I can quickly test things
         if(DEFAULT_USER_DEBUGGING ==0){
             usernameEditText.setText("username");
             passwordEditText.setText("password");
@@ -250,6 +246,7 @@ public class LoginFragment extends Fragment {
                 ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
                         portEditText.getText().toString());
 
+                //Each handler is another "step", each one waits till the last one to finish to start
                 Handler handler = new Handler(Looper.getMainLooper()){
                     @Override
                     public void handleMessage(@NonNull Message msg){
@@ -260,7 +257,7 @@ public class LoginFragment extends Fragment {
                                 public void handleMessage(@NonNull Message msg) {
                                     super.handleMessage(msg);
 
-                                    DataCache test = DataCache.getInstance();
+                                    //DataCache test = DataCache.getInstance(); //For debug
                                     String welcome = "Welcome: " + DataCache.getInstance().theUserPerson.getFirsName() + ", " +
                                             DataCache.getInstance().theUserPerson.getLastName();
                                     Toast.makeText(getContext(), welcome, Toast.LENGTH_SHORT).show();
@@ -319,6 +316,7 @@ public class LoginFragment extends Fragment {
                 ServerProxy serverProxy = new ServerProxy(hostEditText.getText().toString(),
                         portEditText.getText().toString());
 
+                //Each handler is another "step", each one waits till the last one to finish to start
                 Handler handler = new Handler(Looper.getMainLooper()){
                     @Override
                     public void handleMessage(@NonNull Message msg){
@@ -368,21 +366,12 @@ public class LoginFragment extends Fragment {
         });
     }
 
+
+    //Black magic coding stuff that came with the loginFragment
     private void updateUiWithUser(LoggedInUserView model) {
-//        String welcome = getString(R.string.welcome) + model.getDisplayName();
-//        // TODO : initiate successful logged in experience
-//        if (getContext() != null && getContext().getApplicationContext() != null) {
-//            Toast.makeText(getContext().getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-//        }
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-//        if (getContext() != null && getContext().getApplicationContext() != null) {
-//            Toast.makeText(
-//                    getContext().getApplicationContext(),
-//                    errorString,
-//                    Toast.LENGTH_LONG).show();
-//        }
     }
 
     @Override

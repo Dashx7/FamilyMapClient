@@ -11,4 +11,13 @@ public class Settings {
     public static boolean isFilterFemale = true;
     public static boolean isFilterByMomsSide = true;
     public static boolean isFilterByDadsSide = true;
+    public static void Reset(){
+        isSpouseLines = true;
+        isFamilyTreeLines = true;
+        isLifeStoryLines = true;
+        isFilterMale = true;
+        isFilterFemale = true;
+        isFilterByMomsSide = true;
+        isFilterByDadsSide = true;
+    }
 }

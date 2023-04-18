@@ -35,7 +35,12 @@ public class ServerEvent implements Runnable{
         this.theHandler = theHandler;
         this.authToken = authtoken;
     }
-
+    public ServerEvent(EventRequest theRequest, String serverHost, String serverPort, String authtoken) {
+        this.theRequest = theRequest;
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
+        this.authToken = authtoken;
+    }
 
     @Override
     public void run() {
@@ -72,10 +77,6 @@ public class ServerEvent implements Runnable{
                 // Display the JSON data returned from the server
                 System.out.println(respData);
 
-                //Cache the data
-//                for(Event event : eventResult.getEventList()){
-//                    DataCache.getInstance().events.add(event); //This will be all the events in one place
-//                }
                 DataCache.getInstance().events = eventResult.getEventList(); //Everyone associated with the user is here now
                 DataCache.getInstance().fillEvents(eventResult.getEventList()); //This one with the maps
                 System.out.println("Data Cached for Event");
@@ -99,11 +100,13 @@ public class ServerEvent implements Runnable{
             e.printStackTrace();
         }
 
-        Bundle myBundle = new Bundle();
-        myBundle.putBoolean("SuccessMessage", true);
-        Message message = Message.obtain();
-        message.setData(myBundle);
+        if(theHandler!=null){
+            Bundle myBundle = new Bundle();
+            myBundle.putBoolean("SuccessMessage", true);
+            Message message = Message.obtain();
+            message.setData(myBundle);
 
-        theHandler.sendMessage(message);
+            theHandler.sendMessage(message);
+        }
     }
 }

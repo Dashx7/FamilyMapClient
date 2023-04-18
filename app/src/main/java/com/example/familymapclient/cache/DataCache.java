@@ -59,7 +59,7 @@ public class DataCache {
             String key2 = daEvent.getPersonID();
             //The eventID to Event map
             if(eventMap.get(key)!=null){
-                eventMap.get(key).add(daEvent);
+                Objects.requireNonNull(eventMap.get(key)).add(daEvent);
             }
             else{
                 List<Event> listEventToAdd = new ArrayList<>();
@@ -68,7 +68,7 @@ public class DataCache {
             }
             //The personID to Event map
             if(eventMapPersonID.get(key2)!=null){
-                eventMapPersonID.get(key2).add(daEvent);
+                Objects.requireNonNull(eventMapPersonID.get(key2)).add(daEvent);
             }
             else{
                 List<Event> listEventToAdd = new ArrayList<>();

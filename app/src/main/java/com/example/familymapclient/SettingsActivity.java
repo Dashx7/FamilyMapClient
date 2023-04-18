@@ -1,8 +1,8 @@
 package com.example.familymapclient;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -30,13 +30,13 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         //Creating all of my switches
-        Switch switchFamilyTreeLines = findViewById(R.id.switchFamilyTreeLines);
-        Switch switchLifeStoryLines = findViewById(R.id.switchLifeStoryLines);
-        Switch switchSpouseLines = findViewById(R.id.switchSpouseLines);
-        Switch switchFathersSide = findViewById(R.id.switchFathersSide);
-        Switch switchMothersSide = findViewById(R.id.switchMothersSide);
-        Switch switchFemaleEvents = findViewById(R.id.switchFemaleEvents);
-        Switch switchMaleEvents = findViewById(R.id.switchMaleEvents);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchFamilyTreeLines = findViewById(R.id.switchFamilyTreeLines);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchLifeStoryLines = findViewById(R.id.switchLifeStoryLines);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchSpouseLines = findViewById(R.id.switchSpouseLines);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchFathersSide = findViewById(R.id.switchFathersSide);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchMothersSide = findViewById(R.id.switchMothersSide);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchFemaleEvents = findViewById(R.id.switchFemaleEvents);
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchMaleEvents = findViewById(R.id.switchMaleEvents);
 
         LinearLayout logout = findViewById(R.id.logOutLayoutInSettings);
         logout.setOnClickListener(new View.OnClickListener() {
@@ -95,11 +95,4 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return true;
     }
-
-//    public static class SettingsFragment extends PreferenceFragmentCompat {
-//        @Override
-//        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-//            setPreferencesFromResource(R.xml.root_preferences, rootKey);
-//        }
-//    }
 }

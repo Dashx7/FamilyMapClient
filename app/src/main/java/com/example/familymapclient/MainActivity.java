@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState != null) {
-            //Do stuff with the old save state, Not figuring that out rn
-        }
+//        if (savedInstanceState != null) {
+//            //Do stuff with the old save state, Not figuring that out rn
+//        }
 
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentFrameLayout);
@@ -76,22 +76,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
         fragmentManager.beginTransaction().replace(R.id.fragmentFrameLayout,fragment).commit();
 
         //setContentView();
-    }
-    @Override
-    public void notifyLoginIsDone(String message) {
-
-    }
-    @Override
-    public void notifyLoginFailed(String message) {
-
-    }
-    @Override
-    public void notifyRegisterIsDone(String message) {
-
-    }
-    @Override
-    public void notifyRegisterFailed(String message) {
-
     }
 
 }
