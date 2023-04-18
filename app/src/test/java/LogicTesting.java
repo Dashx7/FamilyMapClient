@@ -1,7 +1,4 @@
 import com.example.familymapclient.MapsFragment;
-import com.example.familymapclient.cache.DataCache;
-import com.example.familymapclient.serverProxy.ServerProxy;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,6 +12,7 @@ public class LogicTesting {
     //Filters events according to the current filter settings
     //Chronologically sorts a person’s individual events (birth first, death last, etc.)
     //Correctly searches for people and events (for your Search Activit
+
 
 
 
